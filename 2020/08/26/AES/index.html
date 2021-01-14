@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
+  <link rel="mask-icon" href="/images/avatar@3x.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xyhuangjia.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="AES简介高级加密标准(AES,Advanced Encryption Standard),是最为常见的加密算法，所谓对称加密就是使用相同的密钥进行加密和解密">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AES原理和RSA原理">
+<meta property="og:url" content="https://xyhuangjia.github.io/2020/08/26/AES/index.html">
+<meta property="og:site_name" content="黄佳的博客">
+<meta property="og:description" content="AES简介高级加密标准(AES,Advanced Encryption Standard),是最为常见的加密算法，所谓对称加密就是使用相同的密钥进行加密和解密">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xyhuangjia.github.io/2020/08/26/AES/AES/01.png">
+<meta property="og:image" content="https://xyhuangjia.github.io/2020/08/26/AES/AES/02.jpeg">
+<meta property="og:image" content="https://xyhuangjia.github.io/2020/08/26/AES/AES/03.jpg">
+<meta property="article:published_time" content="2020-08-26T01:08:14.000Z">
+<meta property="article:modified_time" content="2020-08-27T01:11:27.730Z">
+<meta property="article:author" content="黄佳">
+<meta property="article:tag" content="加密">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xyhuangjia.github.io/2020/08/26/AES/AES/01.png">
+
+<link rel="canonical" href="https://xyhuangjia.github.io/2020/08/26/AES/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AES原理和RSA原理 | 黄佳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄佳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.github.io/2020/08/26/AES/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar@3x.png">
+      <meta itemprop="name" content="黄佳">
+      <meta itemprop="description" content="临渊羡鱼不如退而结网。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄佳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AES原理和RSA原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-26 09:08:14" itemprop="dateCreated datePublished" datetime="2020-08-26T09:08:14+08:00">2020-08-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-27 09:11:27" itemprop="dateModified" datetime="2020-08-27T09:11:27+08:00">2020-08-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="AES简介"><a href="#AES简介" class="headerlink" title="AES简介"></a>AES简介</h3><p><strong>高级加密标准(AES,Advanced Encryption Standard)</strong>,是最为常见的加密算法，所谓对称加密就是使用相同的密钥进行加密和解密<a id="more"></a></p>
+<p>加密流程如下</p>
+<p><img src="AES/01.png" alt="加密业务过程"></p>
+<p>密钥可以面对面约定或者使用<a href="">非对称加密算法加密</a>之后进行传输。</p>
+<p>AES为分组密码，分组密码也就是把明文分成组，每组长度相等。每次加密一组数据，直到加密完整个明文。在AES标准规范中，分组长度只能是128位，也就是说，每个分组为16个字节（每个字节8位）。密钥的长度可以使用128位、192位或256位。密钥的长度不同，推荐加密轮数也不同，如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>AES</th>
+<th>密钥长度（32位比特字)</th>
+<th>分组长度(32位比特字)</th>
+<th>加密轮数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AES-128</td>
+<td>4</td>
+<td>4</td>
+<td>10</td>
+</tr>
+<tr>
+<td>AES-192</td>
+<td>6</td>
+<td>4</td>
+<td>12</td>
+</tr>
+<tr>
+<td>AES-256</td>
+<td>8</td>
+<td>4</td>
+<td>14</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>所谓<code>AES-128</code>也就是密钥的长度为128位，加密轮数为10轮。也就是执行一个加密函数十次。但是前九轮执行顺序相同，第十实现才有所不同。</p>
+</li>
+<li><p>解密过程是加密过程的逆过程，调用解密函数</p>
+</li>
+<li><p>加密前九轮每一轮的操作顺序为字节代换、行位移，列位移、列混合，轮密钥加。</p>
+</li>
+</ul>
+<p><img src="AES/02.jpeg" alt="加密原理流程"></p>
+<h4 id="字节代换和逆字节代换"><a href="#字节代换和逆字节代换" class="headerlink" title="字节代换和逆字节代换"></a>字节代换和逆字节代换</h4><p>AES的字节代换其实就是一个简单的查表操作。AES定义了一个<a href="">S盒</a>和一个<a href="">逆S盒</a>。</p>
+<p><a href="">状态矩阵</a>中的元素按照下面的方式映射为一个新的字节：把该字节的高4位作为行值，低4位作为列值，取出S盒或者逆S盒中对应的行的元素作为输出。</p>
+<h4 id="行移位"><a href="#行移位" class="headerlink" title="行移位"></a>行移位</h4><p>行移位是一个简单的左循环移位操作。当密钥长度为128比特时，状态矩阵的第0行左移0字节，第1行左移1字节，第2行左移2字节，第3行左移3字节。</p>
+<p>行移位的逆变换是将状态矩阵中的每一行执行相反的移位操作，例如AES-128中，状态矩阵的第0行右移0字节，第1行右移1字节，第2行右移2字节，第3行右移3字节。</p>
+<h4 id="列混合"><a href="#列混合" class="headerlink" title="列混合"></a>列混合</h4><p>列混合变换是通过矩阵相乘来实现的，经行移位后的状态矩阵与固定的矩阵相乘，得到混淆后的状态矩阵。</p>
+<h4 id="轮密钥加"><a href="#轮密钥加" class="headerlink" title="轮密钥加"></a>轮密钥加</h4><p>轮密钥加是将128位轮密钥Ki同状态矩阵中的数据进行逐位异或操作，如下图所示。其中，密钥Ki中每个字W[4i],W[4i+1],W[4i+2],W[4i+3]为32位比特字，包含4个字节，他们的生成算法下面在下面介绍。轮密钥加过程可以看成是字逐位异或的结果，也可以看成字节级别或者位级别的操作。也就是说，可以看成S0 S1 S2 S3 组成的32位字与W[4i]的异或运算。</p>
+<p>轮密钥加的逆运算同正向的轮密钥加运算完全一致，这是因为异或的逆操作是其自身。轮密钥加非常简单，但却能够影响S数组中的每一位。</p>
+<p>以上为每次轮函数操作流程，调用轮函数之前我们先进行的是对密钥进行拓展。</p>
+<h4 id="密钥扩展"><a href="#密钥扩展" class="headerlink" title="密钥扩展"></a>密钥扩展</h4><ol>
+<li>先将密钥放入4X4矩阵中，获取每一列组成新的矩阵W1，W2,W3,W4。</li>
+<li>扩充矩阵矩阵到44列。</li>
+</ol>
+<h4 id="分组明文补全策略"><a href="#分组明文补全策略" class="headerlink" title="分组明文补全策略"></a>分组明文补全策略</h4><p><strong>使用PKCS5、PKCS7和NOPADDING</strong>三种模式进行补全。PKCS5是指分组数据缺少几个字节，就在数据的末尾填充几个字节的几，比如缺少5个字节，就在末尾填充5个字节的5。PKCS7是指分组数据缺少几个字节，就在数据的末尾填充几个字节的0，比如缺少7个字节，就在末尾填充7个字节的0。NoPadding是指不需要填充，也就是说数据的发送方肯定会保证最后一段数据也正好是16个字节。那如果在PKCS5模式下，最后一段数据的内容刚好就是16个16怎么办？那解密端就不知道这一段数据到底是有效数据还是填充数据了，因此对于这种情况，PKCS5模式会自动帮我们在最后一段数据后再添加16个字节的数据，而且填充数据也是16个16，这样解密段就能知道谁是有效数据谁是填充数据了。PKCS7最后一段数据的内容是16个0，也是同样的道理。<strong>解密端需要使用和加密端同样的Padding模式，才能准确的识别有效数据和填充数据。我们开发通常采用PKCS7 Padding模式。</strong></p>
+<p><strong>注</strong>在17年做该加密方案时候，貌似iOS端使用PKCS7和后端进行加解密开发时候无法成功，换成PKCS7才可以。</p>
+<h5 id="CBC模式"><a href="#CBC模式" class="headerlink" title="CBC模式"></a>CBC模式</h5><p><img src="AES/03.jpg"></p>
+<h3 id="RSA加解密流程"><a href="#RSA加解密流程" class="headerlink" title="RSA加解密流程"></a>RSA加解密流程</h3><h4 id="第一步：生成密钥对，即公钥和私钥。"><a href="#第一步：生成密钥对，即公钥和私钥。" class="headerlink" title="第一步：生成密钥对，即公钥和私钥。"></a><strong>第一步：生成密钥对，即公钥和私钥。</strong></h4><h5 id="1：随机找两个质数-P-和-Q-P-与-Q-越大，越安全。"><a href="#1：随机找两个质数-P-和-Q-P-与-Q-越大，越安全。" class="headerlink" title="1：随机找两个质数 P 和 Q ,P 与 Q 越大，越安全。"></a>1：随机找两个质数 P 和 Q ,P 与 Q 越大，越安全。</h5><p>比如 P = 67 ，Q = 71。计算他们的乘积 n = P * Q = 4757 ，转化为二进为 1001010010101，该加密算法即为 13 位，实际算法是 1024 位 或 2048 位，位数越长，算法越难被破解。</p>
+<h5 id="2：计算-n-的欧拉函数-φ-n-。"><a href="#2：计算-n-的欧拉函数-φ-n-。" class="headerlink" title="2：计算 n 的欧拉函数 φ(n)。"></a>2：计算 n 的欧拉函数 φ(n)。</h5><p>φ(n) 表示在小于等于 n 的正整数之中，与 n 构成互质关系的数的个数。例如：在 1 到 8 之中，与 8 形成互质关系的是1、3、5、7，所以 φ(n) = 4。 如果 n = P * Q，P 与 Q 均为质数，则 φ(n) = φ(P * Q)= φ(P - 1)<em>φ(Q - 1) = (P - 1)</em>(Q - 1) 。 本例中 φ(n) = 66 * 70 = 4620，这里记为 m， m = φ(n) = 4620</p>
+<h5 id="3：随机选择一个整数-e，条件是1-lt-e-lt-m，且-e-与-m-互质。"><a href="#3：随机选择一个整数-e，条件是1-lt-e-lt-m，且-e-与-m-互质。" class="headerlink" title="3：随机选择一个整数 e，条件是1&lt; e &lt; m，且 e 与 m 互质。"></a>3：随机选择一个整数 e，条件是1&lt; e &lt; m，且 e 与 m 互质。</h5><p>公约数只有 1 的两个整数，叫做互质整数，这里我们随机选择 e = 101 请注意不要选择 4619，如果选这个，则公钥和私钥将变得相同。</p>
+<h5 id="4：有一个整数-d，可以使得-e-d-除以-m-的余数为-1。"><a href="#4：有一个整数-d，可以使得-e-d-除以-m-的余数为-1。" class="headerlink" title="4：有一个整数 d，可以使得 e*d 除以 m 的余数为 1。"></a>4：有一个整数 d，可以使得 e*d 除以 m 的余数为 1。</h5><p>即找一个整数 d，使得 (e * d ) % m = 1。 等价于 e * d - 1 = y * m ( y 为整数） 找到 d ，实质就是对下面二元一次方程求解。 e * x - m * y =1 ，其中 e = 101，m = 4620 101x - 4620y =1 这个方程可以用<a href="https://link.zhihu.com/?target=http://zh.wikipedia.org/wiki/%E6%89%A9%E5%B1%95%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95">“扩展欧几里得算法”</a>求解，此处省略具体过程。 总之算出一组整数解（x，y ）= （ 1601，35），即 d = 1601。 到此密钥对生成完毕。不同的 e 生成不同的 d，因此可以生成多个密钥对。</p>
+<p>本例中公钥为 （n，e) = (4757 , 101)，私钥为 （n，d) = (4757 ，1601) ，仅（n，e) = (4757 , 101) 是公开的，其余数字均不公开。可以想像如果只有 n 和 e，如何推导出 d，目前只能靠暴力破解，位数越长，暴力破解的时间越长。</p>
+<h4 id="第二步：加密生成密文-。"><a href="#第二步：加密生成密文-。" class="headerlink" title="第二步：加密生成密文 。"></a><strong>第二步：加密生成密文 。</strong></h4><p>比如甲向乙发送汉字“中”，就要使用乙的公钥加密汉字 “中”， 以 utf-8 方式编码为 [e4 b8 ad]，转为 10 进制为 [228,184,173]。要想使用公钥（n，e) = (4757 , 101)加密，要求<strong>被加密的数字必须小于 n，被加密的数字必须是整数，字符串可以取 ascii 值或unicode值</strong>，因此将“中”字折为三个字节 [228,184,173]，分别对三个字节加密。 假设 a 为明文，b 为密文，则按下列公式计算出 b</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a^e % n = b</span><br></pre></td></tr></table></figure>
+<p>计算 [228,184,173]的密文：</p>
+<p>228^101 % 4757 = 4296</p>
+<p>184^101 % 4757 = 2458</p>
+<p>173^101 % 4757 = 3263</p>
+<p>即 [228,184,173]加密后得到密文 [4296，2458，3263] ，如果没有私钥 d ,神仙也无法从 [4296，2458，3263]中恢复 [228,184,173]。</p>
+<p>乙收到密文 [4296，2458，3263]，并用自己的私钥（n，d) = (4757 ，1601) 解密。解密公式如下： 假设 a 为明文，b 为密文，则按下列公式计算出 a</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a^d % n = b</span><br></pre></td></tr></table></figure>
+<p>密文 [4296，2458，3263]的明文如下：</p>
+<p>4296^1601% 4757 = 228</p>
+<p>2458^1601% 4757 = 184</p>
+<p>3263^1601% 4757 = 173</p>
+<p>即密文 [4296，2458，3263] 解密后得到 [228,184,173] 将[228,184,173] 再按 utf-8 解码为汉字 “中”，至此解密完毕。</p>
+<p><strong>加密和解密的过程使用了费尔马小定理的两种等价的描述</strong>。</p>
+<h3 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_28205153/article/details/55798628">AES加密算法的详细介绍与实现</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/3840b344b27c">对称加密及AES加密算法</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/44185847">一文搞懂 RSA 算法</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag"># 加密</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/26/tableview/" rel="prev" title="面向面试之-卡顿优化">
+      <i class="fa fa-chevron-left"></i> 面向面试之-卡顿优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/26/%E7%A6%BB%E5%B1%8F%E6%B8%B2%E6%9F%93/" rel="next" title="离屏渲染">
+      离屏渲染 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#AES%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">AES简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E4%BB%A3%E6%8D%A2%E5%92%8C%E9%80%86%E5%AD%97%E8%8A%82%E4%BB%A3%E6%8D%A2"><span class="nav-number">1.1.</span> <span class="nav-text">字节代换和逆字节代换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%8C%E7%A7%BB%E4%BD%8D"><span class="nav-number">1.2.</span> <span class="nav-text">行移位</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%97%E6%B7%B7%E5%90%88"><span class="nav-number">1.3.</span> <span class="nav-text">列混合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BD%AE%E5%AF%86%E9%92%A5%E5%8A%A0"><span class="nav-number">1.4.</span> <span class="nav-text">轮密钥加</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%86%E9%92%A5%E6%89%A9%E5%B1%95"><span class="nav-number">1.5.</span> <span class="nav-text">密钥扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E6%98%8E%E6%96%87%E8%A1%A5%E5%85%A8%E7%AD%96%E7%95%A5"><span class="nav-number">1.6.</span> <span class="nav-text">分组明文补全策略</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CBC%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.6.1.</span> <span class="nav-text">CBC模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RSA%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">RSA加解密流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E7%94%9F%E6%88%90%E5%AF%86%E9%92%A5%E5%AF%B9%EF%BC%8C%E5%8D%B3%E5%85%AC%E9%92%A5%E5%92%8C%E7%A7%81%E9%92%A5%E3%80%82"><span class="nav-number">2.1.</span> <span class="nav-text">第一步：生成密钥对，即公钥和私钥。</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%EF%BC%9A%E9%9A%8F%E6%9C%BA%E6%89%BE%E4%B8%A4%E4%B8%AA%E8%B4%A8%E6%95%B0-P-%E5%92%8C-Q-P-%E4%B8%8E-Q-%E8%B6%8A%E5%A4%A7%EF%BC%8C%E8%B6%8A%E5%AE%89%E5%85%A8%E3%80%82"><span class="nav-number">2.1.1.</span> <span class="nav-text">1：随机找两个质数 P 和 Q ,P 与 Q 越大，越安全。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%EF%BC%9A%E8%AE%A1%E7%AE%97-n-%E7%9A%84%E6%AC%A7%E6%8B%89%E5%87%BD%E6%95%B0-%CF%86-n-%E3%80%82"><span class="nav-number">2.1.2.</span> <span class="nav-text">2：计算 n 的欧拉函数 φ(n)。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%EF%BC%9A%E9%9A%8F%E6%9C%BA%E9%80%89%E6%8B%A9%E4%B8%80%E4%B8%AA%E6%95%B4%E6%95%B0-e%EF%BC%8C%E6%9D%A1%E4%BB%B6%E6%98%AF1-lt-e-lt-m%EF%BC%8C%E4%B8%94-e-%E4%B8%8E-m-%E4%BA%92%E8%B4%A8%E3%80%82"><span class="nav-number">2.1.3.</span> <span class="nav-text">3：随机选择一个整数 e，条件是1&lt; e &lt; m，且 e 与 m 互质。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4%EF%BC%9A%E6%9C%89%E4%B8%80%E4%B8%AA%E6%95%B4%E6%95%B0-d%EF%BC%8C%E5%8F%AF%E4%BB%A5%E4%BD%BF%E5%BE%97-e-d-%E9%99%A4%E4%BB%A5-m-%E7%9A%84%E4%BD%99%E6%95%B0%E4%B8%BA-1%E3%80%82"><span class="nav-number">2.1.4.</span> <span class="nav-text">4：有一个整数 d，可以使得 e*d 除以 m 的余数为 1。</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%8A%A0%E5%AF%86%E7%94%9F%E6%88%90%E5%AF%86%E6%96%87-%E3%80%82"><span class="nav-number">2.2.</span> <span class="nav-text">第二步：加密生成密文 。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-number">3.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄佳"
+      src="/images/avatar@3x.png">
+  <p class="site-author-name" itemprop="name">黄佳</p>
+  <div class="site-description" itemprop="description">临渊羡鱼不如退而结网。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xyhuangjia" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xyhuangjia" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xyhuangjia@gmail.com" title="E-Mail → mailto:xyhuangjia@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP备20008595号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄佳</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

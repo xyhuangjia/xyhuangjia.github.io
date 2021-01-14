@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
+  <link rel="mask-icon" href="/images/avatar@3x.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xyhuangjia.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="业务场景   &amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;小公司，经常要按需求方爸爸的要求来做业务调整，于是乎经常被测试妹子催着打个新测试包吧，打个新测试包吧···· &amp;nbsp;急切的想找一个可以偷懒的方式来短暂解放自己的双手不用一直守在电脑前点啊点的。能够自动打包并发送到测试妹子的邮箱里实现这样的一条龙服务。自己能够偷偷的玩会，嘿嘿😜😜😜😜">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次脚本打包的实践">
+<meta property="og:url" content="https://xyhuangjia.github.io/2017/05/22/AutoPackpage/index.html">
+<meta property="og:site_name" content="黄佳的博客">
+<meta property="og:description" content="业务场景   &amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;小公司，经常要按需求方爸爸的要求来做业务调整，于是乎经常被测试妹子催着打个新测试包吧，打个新测试包吧···· &amp;nbsp;急切的想找一个可以偷懒的方式来短暂解放自己的双手不用一直守在电脑前点啊点的。能够自动打包并发送到测试妹子的邮箱里实现这样的一条龙服务。自己能够偷偷的玩会，嘿嘿😜😜😜😜">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-05-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-26T00:51:38.476Z">
+<meta property="article:author" content="黄佳">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xyhuangjia.github.io/2017/05/22/AutoPackpage/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一次脚本打包的实践 | 黄佳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄佳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.github.io/2017/05/22/AutoPackpage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar@3x.png">
+      <meta itemprop="name" content="黄佳">
+      <meta itemprop="description" content="临渊羡鱼不如退而结网。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄佳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一次脚本打包的实践
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-05-22 00:00:00" itemprop="dateCreated datePublished" datetime="2017-05-22T00:00:00+08:00">2017-05-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 08:51:38" itemprop="dateModified" datetime="2020-08-26T08:51:38+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3>业务场景</h3>
+
+<blockquote>
+<p>&emsp;&emsp;&emsp;&emsp;小公司，经常要按需求方爸爸的要求来做业务调整，于是乎经常被测试妹子催着打个新测试包吧，打个新测试包吧···· &nbsp;急切的想找一个可以偷懒的方式来短暂解放自己的双手不用一直守在电脑前点啊点的。能够自动打包并发送到测试妹子的邮箱里实现这样的一条龙服务。自己能够偷偷的玩会，嘿嘿😜😜😜😜<a id="more"></a></p>
+</blockquote>
+<p>&emsp;&emsp;&emsp;&emsp;<del>自己规划的需求很简单,流程共分为两步：<strong>第一步，脚本自动打包，第二步，将ipa.zip发送到x相关人员的邮箱</strong></del></p>
+<p>&emsp;&emsp;&emsp;&emsp;流程共分为三步：<strong>第一步，脚本自动打包，第二步，将ipa.zip发送到x相关人员的邮箱。第三步：ipa包上传App Store</strong></p>
+<p>&emsp;&emsp;&emsp;&emsp;之前在做自动化测试时候也曾经涉猎过脚本打包的业务，当时是在Jenkin环境下实现该业务的(<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/047ac4c39297">Jenkins 打包 iOS</a>)。当时需求很简单也是预研性质的东西，只为能实现脚本打包。所以脚本实现方式比粗犷，现在看来已经不能很完美的适应现在的要求，我需要一种更智能更优雅的实现方式。经过一段时间的资料查找,并没有找到一个很好的解决方案。后来朋友推荐<a target="_blank" rel="noopener" href="https://github.com/jkpang">jkpang-庞</a>写的一个打包脚本<a target="_blank" rel="noopener" href="https://github.com/jkpang/PPAutoPackageScript">PPAutoPackageScript</a>提供了很好的解决方案模型，于是就恬不知耻的按自己的需求悄悄改代码了。</p>
+<h3>脚本打包</h3>
+
+<p>&emsp;&emsp;&emsp;&emsp;脚本是使用别人的，前人栽树后人乘凉。我根据实际需要将原脚本中的一些固定参数改成手动选择输入的模式，在这里不做一一详细讲解。</p>
+<h3>将ipa.zip发送到相关人员的邮箱</h3>
+
+<p>接下来就是发送ipa到指定邮箱。在实现过程中要解决如下两个问题：</p>
+<ul>
+<li><p>每次上传发邮件都要输入密码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#查阅资料后使用该方法 echo &lt;123&gt; | sudo -S &lt;command&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>发邮件时修改上传大文件限制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> # 修改大文件限制 echo $macPassowrd | sudo -S postconf -e message_size_limit&#x3D;0</span><br><span class="line">postconf -d | grep size</span><br></pre></td></tr></table></figure>
+<h3>打包ipa上传App Store</h3>
+
+</li>
+</ul>
+<p>&emsp;&emsp;&emsp;&emsp;既然脚本打包并发送邮件都做成了，我是不是可以更懒点？上线时候是不是也可以通过脚本来完成？能够留出更多时间releax一下？答案绝对是可以的！ 其实对于命令行上传App Store我也觉得没什么好说的，其一是因为在apple官网上直接给出<a target="_blank" rel="noopener" href="http://help.apple.com/itc/apploader/#/apdATD1E53-D1E1A1303-D1E53A1126">altool命令</a>开发者只要遵循规则去填充就好。其次是因为在实际开发过程中我们大多数人使用其的频率实在算不上高。大家更多情况下还是会使用Xcode直接上传或者是通过Application Loader来上传，并不会选择的去使用命令行来实现上传任务。然而，我不喜欢静静守在机器前看进度条，于是我做了如下流程测试：</p>
+<ul>
+<li>使用脚本验证<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">altool --validate-app -f file -u username [-p password] [--output-format xml]</span><br></pre></td></tr></table></figure></li>
+<li>脚本上传ipa<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">altool --upload-app -f file -u username [-p password] [--output-format xml]</span><br></pre></td></tr></table></figure></li>
+<li>捕获输出日志，根据日志内容判断上传结果。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if [[ &quot;$result&quot; !&#x3D; &quot;&quot; ]]</span><br><span class="line"> then</span><br><span class="line">     echo &quot;上传到App Store成功&quot;</span><br><span class="line">     # 上传成功，通知开发人员</span><br><span class="line"> else</span><br><span class="line">     echo &quot;上传到App Store成功失败&quot;</span><br><span class="line">     # 保留xml以备查询</span><br><span class="line"> fi</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>实际测试过程中笔者得到如下格式的成功和失败两份xml文档，读者在操作时候自行选择是否参考</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE plist PUBLIC &quot;-&#x2F;&#x2F;Apple&#x2F;&#x2F;DTD PLIST 1.0&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.apple.com&#x2F;DTDs&#x2F;PropertyList-1.0.dtd&quot;&gt;</span><br><span class="line">&lt;plist version&#x3D;&quot;1.0&quot;&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">	&lt;key&gt;dev-tools-info&lt;&#x2F;key&gt;</span><br><span class="line">	&lt;dict&gt;</span><br><span class="line">		&lt;key&gt;platforms&lt;&#x2F;key&gt;</span><br><span class="line">		&lt;dict&gt;</span><br><span class="line">			&lt;key&gt;iPhoneOS.platform&lt;&#x2F;key&gt;</span><br><span class="line">			&lt;dict&gt;</span><br><span class="line">				&lt;key&gt;paths&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;array&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Developer&#x2F;Platforms&#x2F;iPhoneOS.platform&#x2F;usr&#x2F;bin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Developer&#x2F;Toolchains&#x2F;XcodeDefault.xctoolchain&#x2F;usr&#x2F;bin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Developer&#x2F;usr&#x2F;bin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;usr&#x2F;local&#x2F;bin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;usr&#x2F;bin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;Users&#x2F;Master&#x2F;.rbenv&#x2F;shims&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;bin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;usr&#x2F;sbin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;sbin&lt;&#x2F;string&gt;</span><br><span class="line">					&lt;string&gt;&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Applications&#x2F;Application Loader.app&#x2F;Contents&#x2F;Frameworks&#x2F;ITunesSoftwareService.framework&#x2F;Resources&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;&#x2F;array&gt;</span><br><span class="line">			&lt;&#x2F;dict&gt;</span><br><span class="line">		&lt;&#x2F;dict&gt;</span><br><span class="line">		&lt;key&gt;search-method&lt;&#x2F;key&gt;</span><br><span class="line">		&lt;integer&gt;1&lt;&#x2F;integer&gt;</span><br><span class="line">		&lt;key&gt;search-method-string&lt;&#x2F;key&gt;</span><br><span class="line">		&lt;string&gt;Enclosing Xcode&lt;&#x2F;string&gt;</span><br><span class="line">		&lt;key&gt;xcode-info&lt;&#x2F;key&gt;</span><br><span class="line">		&lt;dict&gt;</span><br><span class="line">			&lt;key&gt;path&lt;&#x2F;key&gt;</span><br><span class="line">			&lt;string&gt;&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Developer&lt;&#x2F;string&gt;</span><br><span class="line">			&lt;key&gt;version.plist&lt;&#x2F;key&gt;</span><br><span class="line">			&lt;dict&gt;</span><br><span class="line">				&lt;key&gt;BuildVersion&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;4&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;key&gt;CFBundleShortVersionString&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;8.3.2&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;key&gt;CFBundleVersion&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;12175&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;key&gt;ProductBuildVersion&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;8E2002&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;key&gt;ProjectName&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;IDEFrameworks&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;key&gt;SourceVersion&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;12175000000000000&lt;&#x2F;string&gt;</span><br><span class="line">			&lt;&#x2F;dict&gt;</span><br><span class="line">		&lt;&#x2F;dict&gt;</span><br><span class="line">	&lt;&#x2F;dict&gt;</span><br><span class="line">	&lt;key&gt;os-version&lt;&#x2F;key&gt;</span><br><span class="line">	&lt;string&gt;10.12.5&lt;&#x2F;string&gt;</span><br><span class="line">	&lt;key&gt;product-errors&lt;&#x2F;key&gt;</span><br><span class="line">	&lt;array&gt;</span><br><span class="line">		&lt;dict&gt;</span><br><span class="line">			&lt;key&gt;code&lt;&#x2F;key&gt;</span><br><span class="line">			&lt;integer&gt;-18000&lt;&#x2F;integer&gt;</span><br><span class="line">			&lt;key&gt;message&lt;&#x2F;key&gt;</span><br><span class="line">			&lt;string&gt;ERROR ITMS-4238: &quot;Redundant Binary Upload. There already exists a binary upload with build version &#39;1.3&#39; for train &#39;1.3&#39;&quot; at SoftwareAssets&#x2F;PreReleaseSoftwareAsset&lt;&#x2F;string&gt;</span><br><span class="line">			&lt;key&gt;userInfo&lt;&#x2F;key&gt;</span><br><span class="line">			&lt;dict&gt;</span><br><span class="line">				&lt;key&gt;NSLocalizedDescription&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;ERROR ITMS-4238: &quot;Redundant Binary Upload. There already exists a binary upload with build version &#39;1.3&#39; for train &#39;1.3&#39;&quot; at SoftwareAssets&#x2F;PreReleaseSoftwareAsset&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;key&gt;NSLocalizedFailureReason&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;ERROR ITMS-4238: &quot;Redundant Binary Upload. There already exists a binary upload with build version &#39;1.3&#39; for train &#39;1.3&#39;&quot; at SoftwareAssets&#x2F;PreReleaseSoftwareAsset&lt;&#x2F;string&gt;</span><br><span class="line">				&lt;key&gt;NSLocalizedRecoverySuggestion&lt;&#x2F;key&gt;</span><br><span class="line">				&lt;string&gt;ERROR ITMS-4238: &quot;Redundant Binary Upload. There already exists a binary upload with build version &#39;1.3&#39; for train &#39;1.3&#39;&quot; at SoftwareAssets&#x2F;PreReleaseSoftwareAsset&lt;&#x2F;string&gt;</span><br><span class="line">			&lt;&#x2F;dict&gt;</span><br><span class="line">		&lt;&#x2F;dict&gt;</span><br><span class="line">	&lt;&#x2F;array&gt;</span><br><span class="line">	&lt;key&gt;tool-path&lt;&#x2F;key&gt;</span><br><span class="line">	&lt;string&gt;&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Applications&#x2F;Application Loader.app&#x2F;Contents&#x2F;Frameworks&#x2F;ITunesSoftwareService.framework&lt;&#x2F;string&gt;</span><br><span class="line">	&lt;key&gt;tool-version&lt;&#x2F;key&gt;</span><br><span class="line">	&lt;string&gt;1.9.784&lt;&#x2F;string&gt;</span><br><span class="line">&lt;&#x2F;dict&gt;</span><br><span class="line">&lt;&#x2F;plist&gt;</span><br></pre></td></tr></table></figure>
+<center>以上为失败样式</center>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE plist PUBLIC &quot;-&#x2F;&#x2F;Apple&#x2F;&#x2F;DTD PLIST 1.0&#x2F;&#x2F;EN&quot; &quot;http:&#x2F;&#x2F;www.apple.com&#x2F;DTDs&#x2F;PropertyList-1.0.dtd&quot;&gt;</span><br><span class="line">&lt;plist version&#x3D;&quot;1.0&quot;&gt;</span><br><span class="line">&lt;dict&gt;</span><br><span class="line">    &lt;key&gt;os-version&lt;&#x2F;key&gt;</span><br><span class="line">    &lt;string&gt;10.11.2&lt;&#x2F;string&gt;</span><br><span class="line">    &lt;key&gt;success-message&lt;&#x2F;key&gt;</span><br><span class="line">    &lt;string&gt;No errors validating archive at &#x2F;XXX&#x2F;XXX.ipa&lt;&#x2F;string&gt;</span><br><span class="line">    &lt;key&gt;tool-version&lt;&#x2F;key&gt;</span><br><span class="line">    &lt;string&gt;1.1.902&lt;&#x2F;string&gt;</span><br><span class="line">    &lt;key&gt;xcode-versions&lt;&#x2F;key&gt;</span><br><span class="line">    &lt;array&gt;</span><br><span class="line">        &lt;dict&gt;</span><br><span class="line">            &lt;key&gt;path&lt;&#x2F;key&gt;</span><br><span class="line">            &lt;string&gt;&#x2F;Applications&#x2F;Xcode.app&lt;&#x2F;string&gt;</span><br><span class="line">            &lt;key&gt;version.plist&lt;&#x2F;key&gt;</span><br><span class="line">            &lt;dict&gt;</span><br><span class="line">                &lt;key&gt;BuildVersion&lt;&#x2F;key&gt;</span><br><span class="line">                &lt;string&gt;7&lt;&#x2F;string&gt;</span><br><span class="line">                &lt;key&gt;CFBundleShortVersionString&lt;&#x2F;key&gt;</span><br><span class="line">                &lt;string&gt;7.2&lt;&#x2F;string&gt;</span><br><span class="line">                &lt;key&gt;CFBundleVersion&lt;&#x2F;key&gt;</span><br><span class="line">                &lt;string&gt;9548&lt;&#x2F;string&gt;</span><br><span class="line">                &lt;key&gt;ProductBuildVersion&lt;&#x2F;key&gt;</span><br><span class="line">                &lt;string&gt;7C68&lt;&#x2F;string&gt;</span><br><span class="line">                &lt;key&gt;ProjectName&lt;&#x2F;key&gt;</span><br><span class="line">                &lt;string&gt;IDEFrameworks&lt;&#x2F;string&gt;</span><br><span class="line">                &lt;key&gt;SourceVersion&lt;&#x2F;key&gt;</span><br><span class="line">                &lt;string&gt;9548000000000000&lt;&#x2F;string&gt;</span><br><span class="line">            &lt;&#x2F;dict&gt;</span><br><span class="line">        &lt;&#x2F;dict&gt;</span><br><span class="line">    &lt;&#x2F;array&gt;</span><br><span class="line">&lt;&#x2F;dict&gt;</span><br><span class="line">&lt;&#x2F;plist&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>以上为成功样式(当时没拷贝文件现在找的一份<a target="_blank" rel="noopener" href="http://zackzheng.info/2015/12/27/2015-12-27-an-automated-script-for-building-archiving-submission-sending-emails/">别人的</a>)</p>
+<p>最后附上测试时使用的脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">#App Store账号和密码</span><br><span class="line">username&#x3D;&quot;&quot;</span><br><span class="line">password&#x3D;&quot;&quot;</span><br><span class="line"></span><br><span class="line">altoolPath&#x3D;&quot;&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Applications&#x2F;Application Loader.app&#x2F;Contents&#x2F;Frameworks&#x2F;ITunesSoftwareService.framework&#x2F;Versions&#x2F;A&#x2F;Support&#x2F;altool&quot;</span><br><span class="line"></span><br><span class="line"># # 检验包内容$ altool</span><br><span class="line"></span><br><span class="line">echo &quot;验证ipa包开始&quot;</span><br><span class="line"></span><br><span class="line">$(&quot;$&#123;altoolPath&#125;&quot; --validate-app -f &quot;UsedCars-v1.3.ipa&quot; -u $username [-p $password] [--output-format xml]) &gt; result.xml</span><br><span class="line"># # 上传脚本</span><br><span class="line">&quot;$&#123;altoolPath&#125;&quot; --upload-app -f &quot;UsedCars-v1.3.ipa&quot; -u $username -p $password -t ios --output-format xml</span><br><span class="line"></span><br><span class="line">FILE&#x3D;$(cat result.xml)</span><br><span class="line">#echo $FILE</span><br><span class="line">#成功上传后包含字符</span><br><span class="line">PATTERN&#x3D;&quot;success-message&quot;</span><br><span class="line">result&#x3D;$(echo $FILE | grep &quot;$&#123;PATTERN&#125;&quot;)</span><br><span class="line"> if [[ &quot;$result&quot; !&#x3D; &quot;&quot; ]]</span><br><span class="line"> then</span><br><span class="line">     echo &quot;上传到App Store成功&quot;</span><br><span class="line">     # 上传成功，通知开发人员</span><br><span class="line"> else</span><br><span class="line">     echo &quot;上传到App Store成功失败&quot;</span><br><span class="line">     # 保留xml以备查询</span><br><span class="line"> fi</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>经过不断的优化与调整后，最终完整代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br></pre></td><td class="code"><pre><span class="line"># &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;项目自定义部分(自定义好下列参数后再执行该脚本)&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; #</span><br><span class="line"># 计时</span><br><span class="line">SECONDS&#x3D;0</span><br><span class="line"># 是否编译工作空间 (例:若是用Cocopods管理的.xcworkspace项目,赋值true;用Xcode默认创建的.xcodeproj,赋值false)</span><br><span class="line"></span><br><span class="line">echo &quot;\033[36;1m请选择编译工作空间方式(输入序号,按回车即可) \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m1. Cocopods管理序号为1       \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m2. Xcode默认创建序号为2    \033[0m&quot;</span><br><span class="line"></span><br><span class="line">read archiveType</span><br><span class="line">is_workspace&#x3D;&quot;false&quot;</span><br><span class="line">if [ -n &quot;$archiveType&quot; ]</span><br><span class="line">then</span><br><span class="line">    if  [ &quot;$archiveType&quot; &#x3D; &quot;1&quot; ] ; then</span><br><span class="line">     is_workspace&#x3D;&quot;true&quot;</span><br><span class="line">     elif  [ &quot;$archiveType&quot; &#x3D; &quot;2&quot; ] ; then</span><br><span class="line">     is_workspace&#x3D;&quot;false&quot;</span><br><span class="line">     else</span><br><span class="line">     echo &quot;输入的参数无效!!!&quot;</span><br><span class="line">     exit  1</span><br><span class="line">     fi    </span><br><span class="line">fi</span><br><span class="line"># echo $is_workspace</span><br><span class="line"></span><br><span class="line"># 指定项目的scheme名称</span><br><span class="line"># (注意: 因为shell定义变量时,&#x3D;号两边不能留空格,若scheme_name与info_plist_name有空格,脚本运行会失败,暂时还没有解决方法,知道的还请指教!)</span><br><span class="line">echo &quot;\033[36;1m请输入工程名(左上角scheme)：\033[0m&quot;</span><br><span class="line">read scheme</span><br><span class="line"># sleep 0.5</span><br><span class="line">scheme_name&#x3D;&quot;$scheme&quot;</span><br><span class="line"># echo $scheme_name</span><br><span class="line"># 工程中Target对应的配置plist文件名称, Xcode默认的配置文件为Info.plist</span><br><span class="line">info_plist_name&#x3D;&quot;Info&quot;</span><br><span class="line"># 指定要打包编译的方式 : Release,Debug...</span><br><span class="line">echo &quot;\033[36;1m请选择打包编译方式(输入序号,按回车即可) \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m1. Debug序号为1       \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m2. Release序号为2    \033[0m&quot;</span><br><span class="line"></span><br><span class="line">read  configurationType</span><br><span class="line">build_configuration&#x3D;&quot;Debug&quot;</span><br><span class="line">if [ -n &quot;$configurationType&quot; ]</span><br><span class="line">then</span><br><span class="line">    if  [ &quot;$configurationType&quot; &#x3D; &quot;1&quot; ] ; then</span><br><span class="line">     build_configuration&#x3D;&quot;Debug&quot;</span><br><span class="line">     elif  [ &quot;$configurationType&quot; &#x3D; &quot;2&quot; ] ; then</span><br><span class="line">     build_configuration&#x3D;&quot;Release&quot;</span><br><span class="line">     else</span><br><span class="line">     echo &quot;输入的参数无效!!!&quot;</span><br><span class="line">     exit  1</span><br><span class="line">     fi    </span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;自动打包部分(无特殊情况不用修改)&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; #</span><br><span class="line"></span><br><span class="line"># 导出ipa所需要的plist文件路径 (默认为AdHocExportOptionsPlist.plist)</span><br><span class="line">ExportOptionsPlistPath&#x3D;&quot;.&#x2F;PPAutoPackageScript&#x2F;AdHocExportOptionsPlist.plist&quot;</span><br><span class="line"># 返回上一级目录,进入项目工程目录</span><br><span class="line">cd ..</span><br><span class="line"># 获取项目名称</span><br><span class="line">project_name&#x3D;&#96;find . -name *.xcodeproj | awk -F &quot;[&#x2F;.]&quot; &#39;&#123;print $(NF-1)&#125;&#39;&#96;</span><br><span class="line"># 获取版本号,内部版本号,bundleID</span><br><span class="line">info_plist_path&#x3D;&quot;$project_name&#x2F;$info_plist_name.plist&quot;</span><br><span class="line">bundle_version&#x3D;&#96;&#x2F;usr&#x2F;libexec&#x2F;PlistBuddy -c &quot;Print CFBundleShortVersionString&quot; $info_plist_path&#96;</span><br><span class="line">bundle_build_version&#x3D;&#96;&#x2F;usr&#x2F;libexec&#x2F;PlistBuddy -c &quot;Print CFBundleIdentifier&quot; $info_plist_path&#96;</span><br><span class="line">bundle_identifier&#x3D;&#96;&#x2F;usr&#x2F;libexec&#x2F;PlistBuddy -c &quot;Print CFBundleVersion&quot; $info_plist_path&#96;</span><br><span class="line"></span><br><span class="line"># 删除旧.xcarchive文件</span><br><span class="line">rm -rf ~&#x2F;Desktop&#x2F;$scheme_name-IPA&#x2F;$scheme_name.xcarchive</span><br><span class="line"># 指定输出ipa路径</span><br><span class="line">export_path&#x3D;~&#x2F;Desktop&#x2F;$scheme_name-IPA</span><br><span class="line"># 指定输出归档文件地址</span><br><span class="line">export_archive_path&#x3D;&quot;$export_path&#x2F;$scheme_name.xcarchive&quot;</span><br><span class="line"># 指定输出ipa地址</span><br><span class="line">export_ipa_path&#x3D;&quot;$export_path&quot;</span><br><span class="line"># 指定输出ipa名称 : scheme_name + bundle_version</span><br><span class="line">ipa_name&#x3D;&quot;$scheme_name-v$bundle_version&quot;</span><br><span class="line"></span><br><span class="line"># AdHoc,AppStore,Enterprise三种打包方式的区别: http:&#x2F;&#x2F;blog.csdn.net&#x2F;lwjok2007&#x2F;article&#x2F;details&#x2F;46379945</span><br><span class="line">echo &quot;\033[36;1m请选择打包方式(输入序号,按回车即可) \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m1. AdHoc       \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m2. AppStore    \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m3. Enterprise  \033[0m&quot;</span><br><span class="line">echo &quot;\033[33;1m4. Development \033[0m&quot;</span><br><span class="line"># 读取用户输入并存到变量里</span><br><span class="line">read parameter</span><br><span class="line">sleep 0.5</span><br><span class="line">method&#x3D;&quot;$parameter&quot;</span><br><span class="line"></span><br><span class="line"># 判读用户是否有输入</span><br><span class="line">if [ -n &quot;$method&quot; ]</span><br><span class="line">then</span><br><span class="line">    if [ &quot;$method&quot; &#x3D; &quot;1&quot; ] ; then</span><br><span class="line">    ExportOptionsPlistPath&#x3D;&quot;.&#x2F;PPAutoPackageScript&#x2F;AdHocExportOptionsPlist.plist&quot;</span><br><span class="line">    elif [ &quot;$method&quot; &#x3D; &quot;2&quot; ] ; then</span><br><span class="line">    ExportOptionsPlistPath&#x3D;&quot;.&#x2F;PPAutoPackageScript&#x2F;AppStoreExportOptionsPlist.plist&quot;</span><br><span class="line">    elif [ &quot;$method&quot; &#x3D; &quot;3&quot; ] ; then</span><br><span class="line">    ExportOptionsPlistPath&#x3D;&quot;.&#x2F;PPAutoPackageScript&#x2F;EnterpriseExportOptionsPlist.plist&quot;</span><br><span class="line">    elif [ &quot;$method&quot; &#x3D; &quot;4&quot; ] ; then</span><br><span class="line">    ExportOptionsPlistPath&#x3D;&quot;.&#x2F;PPAutoPackageScript&#x2F;DevelopmentExportOptionsPlist.plist&quot;</span><br><span class="line">    else</span><br><span class="line">    echo &quot;输入的参数无效!!!&quot;</span><br><span class="line">    exit 1</span><br><span class="line">    fi</span><br><span class="line">fi</span><br><span class="line">echo &quot;\033[36;1m请输入本机密码(输入密码,按回车即可) \033[0m&quot;</span><br><span class="line">read macPassowrd</span><br><span class="line">echo &quot;\033[32m*************************  开始构建项目  *************************  \033[0m&quot;</span><br><span class="line"># 指定输出文件目录不存在则创建</span><br><span class="line">if [ -d &quot;$export_path&quot; ] ; then</span><br><span class="line">echo $export_path</span><br><span class="line">else</span><br><span class="line">mkdir -pv $export_path</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># 判断编译的项目类型是workspace还是project</span><br><span class="line">if $is_workspace ; then</span><br><span class="line"># 编译前清理工程</span><br><span class="line">xcodebuild clean -workspace $&#123;project_name&#125;.xcworkspace \</span><br><span class="line">                 -scheme $&#123;scheme_name&#125; \</span><br><span class="line">                 -configuration $&#123;build_configuration&#125;</span><br><span class="line"></span><br><span class="line">xcodebuild archive -workspace $&#123;project_name&#125;.xcworkspace \</span><br><span class="line">                   -scheme $&#123;scheme_name&#125; \</span><br><span class="line">                   -configuration $&#123;build_configuration&#125; \</span><br><span class="line">                   -archivePath $&#123;export_archive_path&#125;</span><br><span class="line">else</span><br><span class="line"># 编译前清理工程</span><br><span class="line">xcodebuild clean -project $&#123;project_name&#125;.xcodeproj \</span><br><span class="line">                 -scheme $&#123;scheme_name&#125; \</span><br><span class="line">                 -configuration $&#123;build_configuration&#125;</span><br><span class="line"></span><br><span class="line">xcodebuild archive -project $&#123;project_name&#125;.xcodeproj \</span><br><span class="line">                   -scheme $&#123;scheme_name&#125; \</span><br><span class="line">                   -configuration $&#123;build_configuration&#125; \</span><br><span class="line">                   -archivePath $&#123;export_archive_path&#125;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">#  检查是否构建成功</span><br><span class="line">#  xcarchive 实际是一个文件夹不是一个文件所以使用 -d 判断</span><br><span class="line">if [ -d &quot;$export_archive_path&quot; ] ; then</span><br><span class="line">echo &quot;\033[32;1m项目构建成功 🚀 🚀 🚀  \033[0m&quot;</span><br><span class="line">else</span><br><span class="line">echo &quot;\033[31;1m项目构建失败 😢 😢 😢  \033[0m&quot;</span><br><span class="line">exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo &quot;\033[32m*************************  开始导出ipa文件  *************************  \033[0m&quot;</span><br><span class="line">xcodebuild  -exportArchive \</span><br><span class="line">            -archivePath $&#123;export_archive_path&#125; \</span><br><span class="line">            -exportPath $&#123;export_ipa_path&#125; \</span><br><span class="line">            -exportOptionsPlist $&#123;ExportOptionsPlistPath&#125;</span><br><span class="line"># 修改ipa文件名称</span><br><span class="line">mv $export_ipa_path&#x2F;$scheme_name.ipa $export_ipa_path&#x2F;$ipa_name.ipa</span><br><span class="line"></span><br><span class="line"># 检查文件是否存在</span><br><span class="line">if [ -f &quot;$export_ipa_path&#x2F;$ipa_name.ipa&quot; ] ; then</span><br><span class="line">echo &quot;\033[32;1m导出 $&#123;ipa_name&#125;.ipa 包成功 🎉  🎉  🎉   \033[0m&quot;</span><br><span class="line"># open $export_path</span><br><span class="line">else</span><br><span class="line">echo &quot;\033[31;1m导出 $&#123;ipa_name&#125;.ipa 包失败 😢 😢 😢     \033[0m&quot;</span><br><span class="line"># 相关的解决方法</span><br><span class="line">echo &quot;\033[34mps:以下类型的错误可以参考对应的链接\033[0m&quot;</span><br><span class="line">echo &quot;\033[34m  1.\&quot;error: exportArchive: No applicable devices found.\&quot; --&gt; 可能是ruby版本过低导致,升级最新版ruby再试,升级方法自行百度&#x2F;谷歌,GitHub issue: https:&#x2F;&#x2F;github.com&#x2F;jkpang&#x2F;PPAutoPackageScript&#x2F;issues&#x2F;1#issuecomment-297589697&quot;</span><br><span class="line">echo &quot;\033[34m  2.\&quot;No valid iOS Distribution signing identities belonging to team 6F4Q87T7VD were found.\&quot; --&gt; http:&#x2F;&#x2F;fight4j.github.io&#x2F;2016&#x2F;11&#x2F;21&#x2F;xcodebuild&#x2F; \033[0m&quot;</span><br><span class="line">exit 1</span><br><span class="line">fi</span><br><span class="line"># 输出打包总用时</span><br><span class="line">echo &quot;\033[36;1m使用PPAutoPackageScript打包总用时: $&#123;SECONDS&#125;s \033[0m&quot;</span><br><span class="line"># 发送邮件给同事</span><br><span class="line">cd  $export_path</span><br><span class="line">zipName&#x3D;&quot;tempZipName.zip&quot;</span><br><span class="line">zip -r $zipName $export_ipa_path&#x2F;$ipa_name.ipa</span><br><span class="line">export LANG&#x3D;C.UTF-8</span><br><span class="line">#$echo &lt;123&gt; | sudo -S &lt;command&gt;</span><br><span class="line"># 修改大文件限制</span><br><span class="line">echo $macPassowrd | sudo -S postconf -e message_size_limit&#x3D;0</span><br><span class="line">postconf -d | grep size</span><br><span class="line"># echo message_size_limit</span><br><span class="line"># 压缩包路径</span><br><span class="line">zipPath&#x3D;$export_path&#x2F;$zipName</span><br><span class="line"># 邮件标题（使用UTF8编码）</span><br><span class="line">emailTitle&#x3D;&quot;新版测试包&quot;</span><br><span class="line">emailBody&#x3D;&quot;新版测试包，有任何问题请及时与我联系&quot;</span><br><span class="line">( echo $emailBody; uuencode $zipPath ipa.zip) | mail -s $emailTitle xyhuangjia@yeah.net</span><br><span class="line">echo &quot;\033[36;1m发送邮件成功 \033[0m&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>注：</strong>如有任何疑问请发邮件到<a href="mailto:&#x78;&#121;&#104;&#x75;&#x61;&#110;&#x67;&#106;&#x69;&#x61;&#x40;&#121;&#x65;&#97;&#104;&#x2e;&#x6e;&#x65;&#x74;">&#x78;&#121;&#104;&#x75;&#x61;&#110;&#x67;&#106;&#x69;&#x61;&#x40;&#121;&#x65;&#97;&#104;&#x2e;&#x6e;&#x65;&#x74;</a>联系我</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/07/22/getImageHeight/" rel="prev" title="获取图片的宽高">
+      <i class="fa fa-chevron-left"></i> 获取图片的宽高
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/05/27/rename-an-xcode8-project/" rel="next" title="译：以一种更简单或更先进的方式重命名Xcode8项目">
+      译：以一种更简单或更先进的方式重命名Xcode8项目 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">业务场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">脚本打包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">将ipa.zip发送到相关人员的邮箱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">打包ipa上传App Store</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄佳"
+      src="/images/avatar@3x.png">
+  <p class="site-author-name" itemprop="name">黄佳</p>
+  <div class="site-description" itemprop="description">临渊羡鱼不如退而结网。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xyhuangjia" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xyhuangjia" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xyhuangjia@gmail.com" title="E-Mail → mailto:xyhuangjia@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP备20008595号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄佳</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

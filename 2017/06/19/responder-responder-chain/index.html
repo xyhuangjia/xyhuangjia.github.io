@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
+  <link rel="mask-icon" href="/images/avatar@3x.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xyhuangjia.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="起因 昨天遇到了一个bug：当页面上的一个输入框获得焦点后，点击页面上的任何部分位置会造成无输出崩溃信息的闪退，崩溃率达到100%。bug能够重现但是无法精准定位到崩溃位置，纵然我开了全局断点。由于在异常收集工具上显示的responder相关信息。暂时断定是事件在传递过程出现了问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次关于响应者和响应者链的探索">
+<meta property="og:url" content="https://xyhuangjia.github.io/2017/06/19/responder-responder-chain/index.html">
+<meta property="og:site_name" content="黄佳的博客">
+<meta property="og:description" content="起因 昨天遇到了一个bug：当页面上的一个输入框获得焦点后，点击页面上的任何部分位置会造成无输出崩溃信息的闪退，崩溃率达到100%。bug能够重现但是无法精准定位到崩溃位置，纵然我开了全局断点。由于在异常收集工具上显示的responder相关信息。暂时断定是事件在传递过程出现了问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xyhuangjia.github.io/2017/06/19/responder-responder-chain/responder-responder-chain/responder.jpg">
+<meta property="og:image" content="https://xyhuangjia.github.io/2017/06/19/responder-responder-chain/responder-responder-chain/iOS_and_OSX_responder_chain_2x.png">
+<meta property="og:image" content="https://xyhuangjia.github.io/2017/06/19/responder-responder-chain/responder-responder-chain/responder_chain_overview_2x.png">
+<meta property="article:published_time" content="2017-06-19T05:29:04.000Z">
+<meta property="article:modified_time" content="2020-08-26T00:51:38.494Z">
+<meta property="article:author" content="黄佳">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xyhuangjia.github.io/2017/06/19/responder-responder-chain/responder-responder-chain/responder.jpg">
+
+<link rel="canonical" href="https://xyhuangjia.github.io/2017/06/19/responder-responder-chain/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>一次关于响应者和响应者链的探索 | 黄佳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄佳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.github.io/2017/06/19/responder-responder-chain/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar@3x.png">
+      <meta itemprop="name" content="黄佳">
+      <meta itemprop="description" content="临渊羡鱼不如退而结网。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄佳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          一次关于响应者和响应者链的探索
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-06-19 13:29:04" itemprop="dateCreated datePublished" datetime="2017-06-19T13:29:04+08:00">2017-06-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 08:51:38" itemprop="dateModified" datetime="2020-08-26T08:51:38+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">基础知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><blockquote>
+<p>昨天遇到了一个bug：当页面上的一个输入框获得焦点后，点击页面上的任何部分位置会造成无输出崩溃信息的闪退，崩溃率达到100%。bug能够重现但是无法精准定位到崩溃位置，纵然我开了全局断点。由于在异常收集工具上显示的responder相关信息。暂时断定是事件在传递过程出现了问题。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><p>在查找问题时候我觉得我们应该去查找第一手资料，对于iOS开发者来讲最好的资料就是官网的文档了，我们应该先看看官方文档对<a target="_blank" rel="noopener" href="https://developer.apple.com/library/content/documentation/General/Conceptual/Devpedia-CocoaApp/Responder.html">响应者对象</a>和<a target="_blank" rel="noopener" href="https://developer.apple.com/library/content/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/HandlngEventsUsingtheResponderChain.html#//apple_ref/doc/uid/TP40009541-CH11-SW1">响应者和响应者链</a>的解释。鉴于很多同学不愿意阅读英文文档，我将其翻译部分摘录如下：</p>
+<h3 id="响应者对象"><a href="#响应者对象" class="headerlink" title="响应者对象"></a>响应者对象</h3><blockquote>
+<p>响应者是可以响应事件并处理它们的对象。所有响应者对象都是最终从UIResponder（iOS）或NSResponder（OS X）继承的类的实例。 这些类声明一个用于事件处理的编程接口，并为响应者定义一个默认行为。 应用程序的可见对象几乎总是响应者，例如Windows，视图和控件，而应用对象也是响应者。 在iOS中，视图控制器（UIViewController对象）也是响应器对象。<br><img src="responder-responder-chain/responder.jpg"></p>
+</blockquote>
+<blockquote>
+<p>为了接收事件，响应者必须实施适当的事件处理方法，并且在某些情况下告诉应用程序它可以成为第一个响应者。</p>
+</blockquote>
+<blockquote>
+<p><strong>第一个响应者首先收到一些事件</strong><br>在应用程序中，首先接收到多种事件的响应者对象被称为第一响应者。 它接收关键事件，动作事件和动作消息等。 （鼠标事件和多点触摸事件首先转到鼠标指针或手指下方的视图;该视图可能或可能不是第一个响应者。）第一个响应者通常是应用程序认为最适合处理的窗口中的视图 一个事件。 为了收到一个事件，答复者还必须表明愿意成为第一反应者; 它为每个平台以不同的方式进行：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; OS X</span><br><span class="line">- (BOOL)acceptsFirstResponder &#123; return YES; &#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F;iOS</span><br><span class="line">- (BOOL)canBecomeFirstResponder &#123; return YES; &#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>除了接收到事件消息之外，响应者还可以接收到没有指定目标的动作消息。 （当用户操纵消息时，操作消息由诸如按钮和控件之类的控件发送。）</p>
+</blockquote>
+<blockquote>
+<p><strong>响应者链启用合作事件处理</strong><br>如果第一响应者无法处理事件或动作消息，则将其转发到称为响应者链的链接系列中的“下一个响应者”。 响应者链允许响应者对象将处理事件或操作消息的责任转移到应用程序中的其他对象。 如果响应者链中的对象无法处理事件或操作，则会将消息传递给链中的下一个响应者。 该消息沿链条向上移动到更高级别的对象，直到被处理。 如果没有处理，应用程序将其丢弃。</p>
+</blockquote>
+<p><img src="responder-responder-chain/iOS_and_OSX_responder_chain_2x.png" alt="图2"></p>
+<blockquote>
+<p><strong>事件的路径</strong> 响应者链中的事件的一般路径从视图开始 - 第一响应者或鼠标指针或手指下的视图。 从那里，它将视图层次结构上升到窗口对象，然后到全局应用对象。 然而，iOS中的事件响应者链对此路径添加了一个变体：如果视图由视图控制器管理，并且视图无法处理事件，则视图控制器将成为下一个响应者。</p>
+</blockquote>
+<blockquote>
+<p><strong>行动讯息的路径</strong>。 对于动作消息，OS X和iOS都将响应者链扩展到其他对象。 在OS X中，针对应用程序的响应者链基于文档体系结构，使用窗口控制器（NSWindowController）的应用程序和不适合这些类别的应用程序的应用程序链不同。 另外，如果OS X上的某个应用程序同时具有键窗口和主窗口，则动作消息所沿着的响应器链可能涉及两个窗口的视图层次结构。</p>
+</blockquote>
+<h3 id="响应者和响应者链"><a href="#响应者和响应者链" class="headerlink" title="响应者和响应者链"></a>响应者和响应者链</h3><blockquote>
+<p>应用程序使用responder对象接收和处理事件。响应者对象是UIResponder类的任何实例，常见的子类包括UIView，UIViewController和UIApplication。 UIKit自动管理大多数响应者相关的行为，包括事件如何从一个响应者传递到下一个。但是，您可以修改默认行为来更改事件在应用程序中的传送方式。</p>
+</blockquote>
+<blockquote>
+<p>UIKit将大多数事件引导到应用程序中最合适的响应者对象。如果该对象不处理该事件，则UIKit将其转发到活动响应器链中的下一个响应器，该响应器链是应用程序响应者对象的动态配置。因为它是动态的，您的应用程序中没有单个响应者链。然而，很容易确定链中的下一个响应者，因为事件总是从特定响应者对象流向更一般的响应者对象。例如，视图的下一个响应者是其超级视图或管理视图的视图控制器。事件继续流向响应者链，直到被处理。</p>
+</blockquote>
+<blockquote>
+<p>图3显示了一个应用程序链，其形式在其界面包含标签，文本字段，按钮和两个背景视图的应用程序中。如果文本字段不处理事件，则UIKit将事件发送到文本字段的父UIView对象，后跟窗口的根视图。从根视图，响应者链转移到拥有的视图控制器，然后返回到视图的窗口。如果窗口不处理事件，UIKit会将事件传递给UIApplication对象，如果该对象是UIResponder的一个实例，而不是响应者链的一部分，则可能会将应用程序委托给该应用程序委托。</p>
+</blockquote>
+<p><img src="responder-responder-chain/responder_chain_overview_2x.png" alt="图3"></p>
+<blockquote>
+<p>对于每个事件，UIKit指定第一个响应者，并首先将事件发送到该对象。第一响应者根据事件的类型而不同。</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>触摸事件。第一反应者是发生触摸的视图。有关处理这些事件的信息，请参阅在您的视图中处理触摸。</li>
+<li>新闻事件。第一反应者是有重点的回应者。有关处理这些事件的信息，请参阅应用程序编程指南了解tvOS。</li>
+<li>运动事件。第一个响应者是您指定处理事件的对象。 Core Motion处理与加速度计，陀螺仪和磁力计有关的事件。运动事件不遵循响应者链。</li>
+<li>摇动事件。第一个响应者是您（或UIKit）指定为第一个响应者的对象。有关处理这些事件的信息，请参阅处理UIKit抖动手势。</li>
+<li>遥控事件。第一个响应者是您（或UIKit）指定为第一个响应者的对象。有关处理这些事件的信息，请参阅处理远程控制事件。</li>
+<li>编辑菜单消息。第一个响应者是您（或UIKit）指定为第一个响应者的对象。有关UIKit编辑命令的信息，请参阅UIResponderStandardEditActions。<br>由控件发送到其关联对象的操作消息不是事件，但它们仍然可以利用响应器链。当控件的目标对象为nil时，UIKit从目标对象中移走响应者链，并查找实现相应操作方法的对象。例如，UIKit编辑菜单使用此行为来搜索实现名为cut :, copy :,或paste：的方法的响应者对象。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>如果视图具有附加的手势识别器，则手势识别器可以将触摸和按压事件的传送延迟到视图。 delayTouchesBegan，delayedTouchesEnded，并取消UIGestureRecognizerTouchesInView属性，确定触发延迟的时间和方式。有关使用手势识别器处理事件的更多信息，请参阅手势识别器基础知识。</p>
+</blockquote>
+<blockquote>
+<p>确定哪个响应者包含触摸事件<br>UIKit使用基于视图的命中测试来确定触摸事件发生的位置。具体来说，UIKit将触摸位置与视图层次结构中的视图对象的边界进行比较。 hitTest：withEvent：UIView的方法行进视图层次结构，寻找包含指定触摸的最深的子视图。该视图成为触摸事件的第一响应者。</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>注意</strong><br>如果触摸位置在视图的边界之外，则hitTest：withEvent：方法将忽略该视图及其所有子视图。 因此，当视图的clipsToBounds属性为NO时，即使它们包含触摸，该视图边界之外的子视图也不会被返回。 有关命中测试行为的更多信息，请参阅UIView中的hitTest：withEvent：方法的讨论。</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>UIKit会永久分配每个触摸到包含它的视图。 当触摸第一次发生时，UIKit创建每个UITouch对象，并且仅在触摸结束后才释放该触摸对象。 随着触摸位置或其他参数的更改，UIKit会使用新信息更新UITouch对象。 触摸的几个属性不会改变，包括分配的视图。 即使触摸位置移动到原始视图之外，触摸视图属性中的值仍然相同。</p>
+</blockquote>
+<blockquote>
+<h3 id="改变响应者链"><a href="#改变响应者链" class="headerlink" title="改变响应者链"></a>改变响应者链</h3></blockquote>
+<blockquote>
+<p>您可以通过覆盖您的responder对象的nextResponder属性来更改响应者链。 许多UIKit类已经覆盖此属性并返回特定对象。</p>
+<ul>
+<li>如果您覆盖任何类的nextResponder属性，则下一个响应者是您返回的对象。</li>
+<li>UIView</li>
+<li> 如果视图是视图控制器的根视图，则下一个响应者是视图控制器。</li>
+<li> 如果视图不是视图控制器的根视图，则下一个响应者是视图的父视图。</li>
+<li>UIViewController</li>
+<li>如果视图控制器的视图是窗口的根视图，则下一个响应者是窗口对象。</li>
+<li>如果视图控制器由另一个视图控制器呈现，则下一个响应者是呈现视图控制器。</li>
+<li>UIWindow 窗口的下一个响应者是应用程序对象。</li>
+<li>UIApplication  应用程序对象的下一个响应者是应用程序委托，但只有应用程序委托是UIResponder的实例，而不是视图，查看控制器或应用程序对象本身。</li>
+</ul>
+</blockquote>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>其实这是一个已知——&gt;已知的过程。我们需要的是找到在一个合理的方法通过一个已知来验证这个已知的结果。</p>
+<h3 id="检验页面响应"><a href="#检验页面响应" class="headerlink" title="检验页面响应"></a>检验页面响应</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#import &lt;UIKit&#x2F;UIKit.h&gt;</span><br><span class="line"></span><br><span class="line">@interface UIView (NBResponderChainUtilities)</span><br><span class="line">- (UIView*) nb_firstResponder; &#x2F;&#x2F; Recurse into subviews to find one that responds YES to -isFirstResponder</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@interface UIApplication (NBResponderChainUtilities)</span><br><span class="line">- (UIView*) nb_firstResponder; &#x2F;&#x2F; in the -keyWindow</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@interface UIResponder (NBResponderChainUtilities)</span><br><span class="line">- (NSArray*) nb_responderChain; &#x2F;&#x2F; List the -nextResponder starting at the receiver</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">UIView * NBFirstResponder(void); &#x2F;&#x2F; in the app key window</span><br><span class="line">NSArray * NBResponderChain(void);  &#x2F;&#x2F; Starting at the first responder</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;NBResponderChainUtilities.h&quot;</span><br><span class="line"></span><br><span class="line">@implementation UIView (NBResponderChainUtilities)</span><br><span class="line">- (UIView*) nb_firstResponder</span><br><span class="line">&#123;</span><br><span class="line">    if ([self isFirstResponder])&#123;</span><br><span class="line">        return self;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    for (UIView *subView in self.subviews)</span><br><span class="line">    &#123;</span><br><span class="line">        UIView *firstResponder &#x3D; [subView nb_firstResponder];</span><br><span class="line">        if (firstResponder !&#x3D; nil)</span><br><span class="line">        &#123;</span><br><span class="line">            return firstResponder;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return nil;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation UIApplication (NBResponderChainUtilities)</span><br><span class="line">- (UIView*) nb_firstResponder</span><br><span class="line">&#123;</span><br><span class="line">    return [[self keyWindow] nb_firstResponder];</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation UIResponder (NBResponderChainUtilities)</span><br><span class="line">- (NSArray*) nb_responderChain</span><br><span class="line">&#123;</span><br><span class="line">    return [@[self] arrayByAddingObjectsFromArray:[self.nextResponder nb_responderChain]];</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">UIView * NBFirstResponder(void)</span><br><span class="line">&#123;</span><br><span class="line">    return [[UIApplication sharedApplication] nb_firstResponder];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">NSArray * NBResponderChain(void)</span><br><span class="line">&#123;</span><br><span class="line">    return [NBFirstResponder() nb_responderChain];</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(lldb) po NBResponderChain()</span><br><span class="line">$13 &#x3D; 0x213dda70 &lt;__NSArrayI 0x213dda70&gt;(</span><br><span class="line">&lt;UIActionSheet: 0x11915160; frame &#x3D; (0 231; 320 337); opaque &#x3D; NO; ...</span><br><span class="line">&lt;UIView: 0x222c73b0; frame &#x3D; (0 0; 320 568); opaque &#x3D; NO; layer ...</span><br><span class="line">&lt;UIView: 0x2229d340; frame &#x3D; (0 0; 320 568); opaque &#x3D; NO; layer ...</span><br><span class="line">&lt;UIView: 0x11913dc0; frame &#x3D; (0 0; 320 568); clipsToBounds &#x3D; YES; ...</span><br><span class="line">&lt;_UIAlertOverlayWindow: 0x2226d4e0; frame &#x3D; (0 0; 320 568); layer ...</span><br><span class="line">&lt;UIApplication: 0xaa66b30&gt;,</span><br><span class="line">&lt;BicycletteApplicationDelegate: 0xab78c60&gt;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="大佬的文章传送门"><a href="#大佬的文章传送门" class="headerlink" title="大佬的文章传送门"></a>大佬的文章传送门</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://itangqi.me/2016/04/18/the-first-meet-with-event-delivery/">初探 iOS 事件分发机制</a></li>
+<li><a target="_blank" rel="noopener" href="http://sindrilin.com/2015/12/27/%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E5%93%8D%E5%BA%94%E9%93%BE/">事件传递响应链</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.hmttommy.com/2015/05/25/iOS-hitTest/">iOS hitTest-点击事件分发分析</a></li>
+</ul>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>千辛万苦找到崩溃的原因了。是因为使用了firstResponder这个命名一个方法，在该方法里取消输入框第一响应，过早释放对象引起的空指针一场引起的异常闪退。iOS10之前貌似是没有的。去寻找原因，没找到。得出老生常谈的结论：命名要规范。</p>
+<p>响应者链和事件的分发是两个不同的概念。前者传递路径是一个自上而下，后者是一个自下而上。不能混淆为一谈。</p>
+<p>PS:下周更新事件分发机制</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/06/05/certificate-manager/" rel="prev" title="证书过期之后">
+      <i class="fa fa-chevron-left"></i> 证书过期之后
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/06/26/move-blog-to-hexo/" rel="next" title="博客迁移至Hexo">
+      博客迁移至Hexo <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%96%99"><span class="nav-number">2.</span> <span class="nav-text">资料</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E8%80%85%E5%AF%B9%E8%B1%A1"><span class="nav-number">2.1.</span> <span class="nav-text">响应者对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E8%80%85%E5%92%8C%E5%93%8D%E5%BA%94%E8%80%85%E9%93%BE"><span class="nav-number">2.2.</span> <span class="nav-text">响应者和响应者链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E5%93%8D%E5%BA%94%E8%80%85%E9%93%BE"><span class="nav-number">2.3.</span> <span class="nav-text">改变响应者链</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-number">3.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E9%AA%8C%E9%A1%B5%E9%9D%A2%E5%93%8D%E5%BA%94"><span class="nav-number">3.1.</span> <span class="nav-text">检验页面响应</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E7%BB%93%E6%9E%9C"><span class="nav-number">3.2.</span> <span class="nav-text">输出结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E4%BD%AC%E7%9A%84%E6%96%87%E7%AB%A0%E4%BC%A0%E9%80%81%E9%97%A8"><span class="nav-number">4.</span> <span class="nav-text">大佬的文章传送门</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">5.</span> <span class="nav-text">后记</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄佳"
+      src="/images/avatar@3x.png">
+  <p class="site-author-name" itemprop="name">黄佳</p>
+  <div class="site-description" itemprop="description">临渊羡鱼不如退而结网。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xyhuangjia" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xyhuangjia" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xyhuangjia@gmail.com" title="E-Mail → mailto:xyhuangjia@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP备20008595号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄佳</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

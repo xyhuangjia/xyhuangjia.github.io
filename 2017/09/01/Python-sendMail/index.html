@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
+  <link rel="mask-icon" href="/images/avatar@3x.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xyhuangjia.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="起因机器运行的越来慢，每天启动模拟器需要十几分钟，打个发布包也需要十分钟左右，实在受不了这个速度，一咬牙一跺脚就把机器格式化了(其实是作死行为，为后来半个月工作带来了不小的麻烦)。重装部分软件后发现我的打包脚本邮件有时候发送邮件到个别邮箱时，邮件无法准时到达。当时是怎么配置发送环境的资料也随电脑格式化烟消云散了。更不想再去重走回头路，按照原来的方法一步步去配置。最近也是在学习Python，有这样的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pyhon发送邮件实践(自动化打包续)">
+<meta property="og:url" content="https://xyhuangjia.github.io/2017/09/01/Python-sendMail/index.html">
+<meta property="og:site_name" content="黄佳的博客">
+<meta property="og:description" content="起因机器运行的越来慢，每天启动模拟器需要十几分钟，打个发布包也需要十分钟左右，实在受不了这个速度，一咬牙一跺脚就把机器格式化了(其实是作死行为，为后来半个月工作带来了不小的麻烦)。重装部分软件后发现我的打包脚本邮件有时候发送邮件到个别邮箱时，邮件无法准时到达。当时是怎么配置发送环境的资料也随电脑格式化烟消云散了。更不想再去重走回头路，按照原来的方法一步步去配置。最近也是在学习Python，有这样的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-09-01T03:19:53.000Z">
+<meta property="article:modified_time" content="2020-08-26T00:51:38.476Z">
+<meta property="article:author" content="黄佳">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xyhuangjia.github.io/2017/09/01/Python-sendMail/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Pyhon发送邮件实践(自动化打包续) | 黄佳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄佳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.github.io/2017/09/01/Python-sendMail/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar@3x.png">
+      <meta itemprop="name" content="黄佳">
+      <meta itemprop="description" content="临渊羡鱼不如退而结网。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄佳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pyhon发送邮件实践(自动化打包续)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-01 11:19:53" itemprop="dateCreated datePublished" datetime="2017-09-01T11:19:53+08:00">2017-09-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 08:51:38" itemprop="dateModified" datetime="2020-08-26T08:51:38+08:00">2020-08-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>机器运行的越来慢，每天启动模拟器需要十几分钟，打个发布包也需要十分钟左右，实在受不了这个速度，一咬牙一跺脚就把机器格式化了(其实是作死行为，为后来半个月工作带来了不小的麻烦)。重装部分软件后发现我的打包脚本邮件有时候发送邮件到个别邮箱时，邮件无法准时到达。当时是怎么配置发送环境的资料也随电脑格式化烟消云散了。更不想再去重走回头路，按照原来的方法一步步去配置。最近也是在学习Python，有这样的一个机会学以致用使用Python发送邮件貌似不能够错过。</p>
+<a id="more"></a>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
+<li>1.发送邮件。能够正常、准时、稳定发送有标题、正文并且带有附件的邮件。</li>
+<li>2.能够在Mac终端使用命令行操作操作。能与Shell打包脚本之间参数传递</li>
+<li>3.发送邮件时候能够直观看到发送的进度，上传的网络速率(目前尚未实现)等等</li>
+</ul>
+<h2 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h2><h3 id="发送带附件的邮件"><a href="#发送带附件的邮件" class="headerlink" title="发送带附件的邮件"></a>发送带附件的邮件</h3><p>python使用smtp发送邮件。关于这个我觉得没有什么好说的，详情见<a target="_blank" rel="noopener" href="http://www.runoob.com/python/python-tutorial.html">菜鸟教程</a>和<a target="_blank" rel="noopener" href="https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000">Python 2.7教程</a></p>
+<h3 id="获取邮件发送进度和网速"><a href="#获取邮件发送进度和网速" class="headerlink" title="获取邮件发送进度和网速"></a>获取邮件发送进度和网速</h3><p>有时候我希望看到邮件的发送进度，但smtp自身并不能直接显示邮件发送的进度。我们可以通过每秒读取文件数据占总量百分比来实现需求。阅读其源码找到如下代码对其做一定拓展貌似能满足我们的需求。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">def data(self,msg):</span><br><span class="line">        &quot;&quot;&quot;SMTP &#39;DATA&#39; command -- sends message data to server.</span><br><span class="line"></span><br><span class="line">        Automatically quotes lines beginning with a period per rfc821.</span><br><span class="line">        Raises SMTPDataError if there is an unexpected reply to the</span><br><span class="line">        DATA command; the return value from this method is the final</span><br><span class="line">        response code received when the all data is sent.</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        self.putcmd(&quot;data&quot;)</span><br><span class="line">        (code,repl)&#x3D;self.getreply()</span><br><span class="line">        if self.debugle vel &gt;0 : print &quot;data:&quot;, (code,repl)</span><br><span class="line">        if code !&#x3D; 354:</span><br><span class="line">            raise SMTPDataError(code,repl)</span><br><span class="line">        else:</span><br><span class="line">            q &#x3D; quotedata(msg)</span><br><span class="line">            if q[-2:] !&#x3D; CRLF:</span><br><span class="line">                q &#x3D; q + CRLF</span><br><span class="line">            q &#x3D; q + &quot;.&quot; + CRLF</span><br><span class="line">            self.send(q)</span><br><span class="line">            (code,msg)&#x3D;self.getreply()</span><br><span class="line">            if self.debuglevel &gt;0 : print &quot;data:&quot;, (code,msg)</span><br><span class="line">            return (code,msg)</span><br></pre></td></tr></table></figure>
+<p>我们可以在其发送过程中获取每秒钟监测到发送的字节数，并将其输出出来，这样就能获取其发送进度和网速了.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">global starttime,sendByteBySec</span><br><span class="line">endtime &#x3D; datetime.datetime.now()</span><br><span class="line">percent &#x3D; 100. * progress &#x2F; total</span><br><span class="line">stdout.write(&#39;\r&#39;)</span><br><span class="line">starttime &#x3D; endtime;</span><br><span class="line">speedNum &#x3D; (progress - sendByteBySec)&#x2F;1024</span><br><span class="line">if (endtime - starttime).seconds &gt;&#x3D;1:</span><br><span class="line">   # starttime &#x3D; endtime;</span><br><span class="line">   # speedNum &#x3D; (progress - sendByteBySec)&#x2F;1024</span><br><span class="line">   stdout.write(&quot;%s bytes sent of %s [%2.0f%%]|Speed: [%2.0f%%]&quot; % (progress, total, percent,speedNum))</span><br><span class="line">   # sendByteBySec &#x3D; progress</span><br><span class="line">else:</span><br><span class="line">    # starttime &#x3D; endtime;</span><br><span class="line">    # speedNum &#x3D; (progress - sendByteBySec)&#x2F;1024</span><br><span class="line">    stdout.write(&quot;%s bytes sent of %s [%2.0f%%]|Speed: [%2.0f%%]&quot; % (progress, total, percent,speedNum))</span><br><span class="line"></span><br><span class="line">sendByteBySec &#x3D; progress</span><br><span class="line">stdout.flush()</span><br><span class="line"># print (endtime - starttime).seconds</span><br><span class="line">if percent &gt;&#x3D; 100: stdout.write(&#39;\n&#39;)</span><br></pre></td></tr></table></figure>
+<p>完整代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"># !&#x2F;usr&#x2F;bin&#x2F;python</span><br><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line"># import smtplib</span><br><span class="line">from smtplib import SMTP, quotedata, CRLF, SMTPDataError</span><br><span class="line">from email import encoders</span><br><span class="line">from email.header import Header</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line">from email.utils import parseaddr, formataddr</span><br><span class="line">from email.MIMEMultipart import MIMEMultipart</span><br><span class="line">from email.mime.base import MIMEBase</span><br><span class="line">from sys import stderr, stdout</span><br><span class="line">import os,sys, time</span><br><span class="line"></span><br><span class="line">class ExtendedSMTP(SMTP):</span><br><span class="line">  def data(self, msg):</span><br><span class="line">    self.putcmd(&quot;data&quot;)</span><br><span class="line">    (code,repl)&#x3D;self.getreply()</span><br><span class="line">    if self.debuglevel &gt; 0 : print &gt;&gt; stderr, &quot;data:&quot;, (code, repl)</span><br><span class="line">    if code !&#x3D; 354:</span><br><span class="line">      raise SMTPDataError(code,repl)</span><br><span class="line">    else:</span><br><span class="line">      q &#x3D; quotedata(msg)</span><br><span class="line">      if q[-2:] !&#x3D; CRLF:</span><br><span class="line">        q &#x3D; q + CRLF</span><br><span class="line">      q &#x3D; q + &quot;.&quot; + CRLF</span><br><span class="line"></span><br><span class="line">      # begin modified send code</span><br><span class="line">      chunk_size &#x3D; 2048</span><br><span class="line">      bytes_sent &#x3D; 0</span><br><span class="line"></span><br><span class="line">      while bytes_sent !&#x3D; len(q):</span><br><span class="line">        chunk &#x3D; q[bytes_sent:bytes_sent+chunk_size]</span><br><span class="line">        self.send(chunk)</span><br><span class="line">        bytes_sent +&#x3D; len(chunk)</span><br><span class="line">        if hasattr(self, &quot;callback&quot;):</span><br><span class="line">          self.callback(bytes_sent, len(q))</span><br><span class="line">      # end modified send code</span><br><span class="line"></span><br><span class="line">      (code,msg)&#x3D;self.getreply()</span><br><span class="line">      if self.debuglevel &gt;0 : print&gt;&gt;stderr, &quot;data:&quot;, (code,msg)</span><br><span class="line">      return (code,msg)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def sendMail(filePath,fileName,appName):</span><br><span class="line">    def _format_addr(s):</span><br><span class="line">        name, addr &#x3D; parseaddr(s)</span><br><span class="line">        return formataddr(( \</span><br><span class="line">            Header(name, &#39;utf-8&#39;).encode(), \</span><br><span class="line">            addr.encode(&#39;utf-8&#39;) if isinstance(addr, unicode) else addr))</span><br><span class="line"></span><br><span class="line">    def callback(progress, total):</span><br><span class="line">          percent &#x3D; 100. * progress &#x2F; total</span><br><span class="line">          stdout.write(&#39;\r&#39;)</span><br><span class="line">          stdout.write(&quot;%s bytes sent of %s [%2.0f%%]&quot; % (progress, total, percent))</span><br><span class="line">          stdout.flush()</span><br><span class="line">          if percent &gt;&#x3D; 100: stdout.write(&#39;\n&#39;)</span><br><span class="line"></span><br><span class="line">    #参数配置</span><br><span class="line">    from_addr &#x3D; &quot;xyhuangjia@yeah.net&quot;</span><br><span class="line">    password &#x3D; &quot;HJ19930112&quot;</span><br><span class="line">    to_addr &#x3D; [&quot;dengq@ywsoftware.com&quot;,&quot;huangj@ywsoftware.com&quot;]</span><br><span class="line">    smtp_server &#x3D; &quot;smtp.yeah.net&quot;</span><br><span class="line"></span><br><span class="line">    #邮件信息配置</span><br><span class="line">    #正文</span><br><span class="line">    content &#x3D; u&#39;%s新版本(版本号)的安装包已发送，请将本版本的需要变更之处用文本记录下来发送给本人，谢谢🙏&#39;% sys.argv[3]</span><br><span class="line">    #标题（使用传输过来的数据）</span><br><span class="line">    subject &#x3D; u&#39;%s的安装包&#39; % sys.argv[3]</span><br><span class="line">    emailFrom &#x3D; &quot;鶸开发黄小佳&quot;</span><br><span class="line">    msg &#x3D; MIMEMultipart()</span><br><span class="line">    msg[&#39;From&#39;] &#x3D; _format_addr(&#39;%s&lt;%s&gt;&#39; % (emailFrom,from_addr))</span><br><span class="line">    msg[&#39;To&#39;] &#x3D; _format_addr(u&#39;接受者 &lt;%s&gt;&#39; % to_addr)</span><br><span class="line">    msg[&#39;Subject&#39;] &#x3D; Header(&#39;%s&#39; % subject, &#39;utf-8&#39;).encode()</span><br><span class="line">    msg.attach(MIMEText(&#39;%s&#39;%content, &#39;plain&#39;, &#39;utf-8&#39;))</span><br><span class="line"></span><br><span class="line">    mime &#x3D; MIMEBase(&#39;application&#39;, &#39;octet-stream&#39;, filename&#x3D;fileName)</span><br><span class="line">    with open(filePath, &#39;rb&#39;) as f:</span><br><span class="line">        # 加上必要的头信息:</span><br><span class="line">        mime.add_header(&#39;Content-Disposition&#39;, &#39;attachment&#39;, filename&#x3D;fileName)</span><br><span class="line">        mime.add_header(&#39;Content-ID&#39;, &#39;&lt;0&gt;&#39;)</span><br><span class="line">        mime.add_header(&#39;X-Attachment-Id&#39;, &#39;0&#39;)</span><br><span class="line">        mime.set_payload(f.read())</span><br><span class="line">        # 用Base64编码:</span><br><span class="line">        encoders.encode_base64(mime)</span><br><span class="line">        # 添加到MIMEMultipart:</span><br><span class="line">        msg.attach(mime)</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        server &#x3D; ExtendedSMTP()</span><br><span class="line">        server.callback &#x3D; callback</span><br><span class="line">        server.connect(smtp_server, 25)</span><br><span class="line">    	# server.set_debuglevel(1)#坑爹的调试模式，打开输出一万行坑了我四天</span><br><span class="line">    	server.login(from_addr, password)</span><br><span class="line">    	server.sendmail(from_addr, to_addr, msg.as_string())</span><br><span class="line">    	server.quit()</span><br><span class="line">    	return True</span><br><span class="line">    except Exception as e:</span><br><span class="line">        raise e</span><br><span class="line">    	return False</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ &#x3D;&#x3D; &#39;__main__&#39;:</span><br><span class="line"></span><br><span class="line">    # print sys.argv</span><br><span class="line">    if sendMail(sys.argv[1], sys.argv[2], sys.argv[3]):</span><br><span class="line">        print &quot;\033[32;1m 邮件已发送!\033[0m&quot;</span><br><span class="line">    else:</span><br><span class="line">        print &quot;邮件发送失败!&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="注意："><a href="#注意：" class="headerlink" title="注意："></a>注意：</h2><p>没事不要开什么调试模式<code>server.set_debuglevel(1)</code>打开后会输出代码执行过程，在含有大附件的邮件在发送时会严重的拖慢进度，要注意这个</p>
+<h2 id="参考文章链接"><a href="#参考文章链接" class="headerlink" title="参考文章链接"></a>参考文章链接</h2><p><a target="_blank" rel="noopener" href="http://m.jb51.net/article/65567.htm">Python发送以整个文件夹的内容为附件的邮件的教程</a></p>
+<p><a target="_blank" rel="noopener" href="http://svn.python.org/projects/python/tags/r22a3/Lib/smtplib.py">smtplib</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/01/send-email-with-mailcore2/" rel="prev" title="MailCore2发送邮件">
+      <i class="fa fa-chevron-left"></i> MailCore2发送邮件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/04/16/ios-block/" rel="next" title="Block学习笔记">
+      Block学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">起因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E8%BF%87%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">实现过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E5%B8%A6%E9%99%84%E4%BB%B6%E7%9A%84%E9%82%AE%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">发送带附件的邮件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%82%AE%E4%BB%B6%E5%8F%91%E9%80%81%E8%BF%9B%E5%BA%A6%E5%92%8C%E7%BD%91%E9%80%9F"><span class="nav-number">3.2.</span> <span class="nav-text">获取邮件发送进度和网速</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%EF%BC%9A"><span class="nav-number">4.</span> <span class="nav-text">注意：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考文章链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄佳"
+      src="/images/avatar@3x.png">
+  <p class="site-author-name" itemprop="name">黄佳</p>
+  <div class="site-description" itemprop="description">临渊羡鱼不如退而结网。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xyhuangjia" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xyhuangjia" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xyhuangjia@gmail.com" title="E-Mail → mailto:xyhuangjia@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP备20008595号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄佳</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

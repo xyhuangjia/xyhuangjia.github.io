@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
+  <link rel="mask-icon" href="/images/avatar@3x.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xyhuangjia.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="业务场景 公司的企业版app又双无法下载了。依然记得一年前误删发布的场景。。。。ヽ(*。&gt;Д&lt;)o゜。。。现在想起还一身冷汗，下班开始公司电话一直响个不停一遍遍的跟客户解释出现问题的原因，真是噩梦般的回忆。。。  如果证书已到期或已撤销，会出现什么情况?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="证书过期之后">
+<meta property="og:url" content="https://xyhuangjia.github.io/2017/06/05/certificate-manager/index.html">
+<meta property="og:site_name" content="黄佳的博客">
+<meta property="og:description" content="业务场景 公司的企业版app又双无法下载了。依然记得一年前误删发布的场景。。。。ヽ(*。&gt;Д&lt;)o゜。。。现在想起还一身冷汗，下班开始公司电话一直响个不停一遍遍的跟客户解释出现问题的原因，真是噩梦般的回忆。。。  如果证书已到期或已撤销，会出现什么情况?">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-06-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-26T00:51:38.477Z">
+<meta property="article:author" content="黄佳">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xyhuangjia.github.io/2017/06/05/certificate-manager/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>证书过期之后 | 黄佳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄佳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.github.io/2017/06/05/certificate-manager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar@3x.png">
+      <meta itemprop="name" content="黄佳">
+      <meta itemprop="description" content="临渊羡鱼不如退而结网。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄佳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          证书过期之后
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-06-05 00:00:00" itemprop="dateCreated datePublished" datetime="2017-06-05T00:00:00+08:00">2017-06-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 08:51:38" itemprop="dateModified" datetime="2020-08-26T08:51:38+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9D%82%E8%B0%88/" itemprop="url" rel="index"><span itemprop="name">杂谈</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景"></a>业务场景</h2><blockquote>
+<p>公司的企业版app又双无法下载了。依然记得一年前误删发布的场景。。。。ヽ(*。&gt;Д&lt;)o゜。。。现在想起还一身冷汗，下班开始公司电话一直响个不停一遍遍的跟客户解释出现问题的原因，真是噩梦般的回忆。。。</p>
+</blockquote>
+<p>如果证书已到期或已撤销，会出现什么情况?<a id="more"></a></p>
+<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><p><strong>源于<a target="_blank" rel="noopener" href="https://developer.apple.com/support/certificates/cn/">Develop官网说明</a>现摘录如下：</strong></p>
+<blockquote>
+<ul>
+<li><h3 id="Apple-Push-Notification-Service-证书"><a href="#Apple-Push-Notification-Service-证书" class="headerlink" title="Apple Push Notification Service 证书"></a>Apple Push Notification Service 证书</h3>您将无法向您的 app 发送推送通知。</li>
+<li><h3>Pass Type ID 证书 (Passbook)</h3>
+如果您的证书到期，用户设备上已安装的通行证将继续正常工作。但是，您不能再签署新的通行证或向现有通行证发送更新。如果证书已撤销，您的通行证将无法正常工作。</li>
+<li><h3>iOS 分发证书 (App Store)</h3>
+如果您的 Apple Developer Program 会员资格有效，则您在 App Store 上的现有 app 将不受影响。但是，您不能再向 App Store 提交新的 app 或更新。</li>
+<li><h3>iOS 分发证书（企业内部、内部使用 App）</h3>
+用户不能再运行已使用此证书签名的 app。您必须发布使用新证书签名的新版本 app。</li>
+<li><h3>Mac App 分发证书和 Mac Installer 分发证书 (Mac App Store)</h3>
+如果您的 Apple Developer Program 会员资格有效，则您在 Mac App Store 上的现有 app 将不受影响。但是，您不能再向 Mac App Store 提交新的 app 或更新。</li>
+<li><h3>Developer ID 应用软件证书和 Developer ID 安装程序证书（Mac 应用软件）</h3>
+如果您的证书到期，用户仍然可以下载、安装和运行使用该证书签名的 Mac 应用软件版本。但是，您需要使用新的证书来为更新和新应用软件签名。如果您的证书已撤销，用户将不能再安装使用该证书签名的应用软件。   
+</li>
+</ul>
+</blockquote>
+<h2 id="证书到期之间的app版本处理"><a href="#证书到期之间的app版本处理" class="headerlink" title="证书到期之间的app版本处理"></a>证书到期之间的app版本处理</h2><p>查阅了下相关资料。貌似除了在过期时间到来之前发新版App没有别的有效处理方案。<a target="_blank" rel="noopener" href="http://www.cnblogs.com/xiaonanxia/archive/2013/04/24/3040567.html">你可以同时让两个证书处于活跃状态，它们之间相互独立。第二个证书是为了提供一个重叠期，让您能够在第一个证书过期前更新您的应用程序。从 iOS Dev Center（iOS 开发中心）请求您的第二个分发证书时，请确保您没有撤销第一个证书。</a></p>
+<h2 id="最后弱鸡的解决方案"><a href="#最后弱鸡的解决方案" class="headerlink" title="最后弱鸡的解决方案"></a>最后弱鸡的解决方案</h2><p>记录证书到期时间将更新事件加入日历中，到指定日志通知手动更新到期证书。当然您有更加优良的方案可以加qq2587171762联系我或者在下方留言交流下。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/05/27/rename-an-xcode8-project/" rel="prev" title="译：以一种更简单或更先进的方式重命名Xcode8项目">
+      <i class="fa fa-chevron-left"></i> 译：以一种更简单或更先进的方式重命名Xcode8项目
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/06/19/responder-responder-chain/" rel="next" title="一次关于响应者和响应者链的探索">
+      一次关于响应者和响应者链的探索 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">业务场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%96%99"><span class="nav-number">2.</span> <span class="nav-text">资料</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Apple-Push-Notification-Service-%E8%AF%81%E4%B9%A6"><span class="nav-number">2.1.</span> <span class="nav-text">Apple Push Notification Service 证书</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.2.</span> <span class="nav-text">Pass Type ID 证书 (Passbook)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.3.</span> <span class="nav-text">iOS 分发证书 (App Store)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.4.</span> <span class="nav-text">iOS 分发证书（企业内部、内部使用 App）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.5.</span> <span class="nav-text">Mac App 分发证书和 Mac Installer 分发证书 (Mac App Store)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.6.</span> <span class="nav-text">Developer ID 应用软件证书和 Developer ID 安装程序证书（Mac 应用软件）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%81%E4%B9%A6%E5%88%B0%E6%9C%9F%E4%B9%8B%E9%97%B4%E7%9A%84app%E7%89%88%E6%9C%AC%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">证书到期之间的app版本处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E5%BC%B1%E9%B8%A1%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">4.</span> <span class="nav-text">最后弱鸡的解决方案</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄佳"
+      src="/images/avatar@3x.png">
+  <p class="site-author-name" itemprop="name">黄佳</p>
+  <div class="site-description" itemprop="description">临渊羡鱼不如退而结网。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xyhuangjia" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xyhuangjia" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xyhuangjia@gmail.com" title="E-Mail → mailto:xyhuangjia@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP备20008595号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄佳</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
