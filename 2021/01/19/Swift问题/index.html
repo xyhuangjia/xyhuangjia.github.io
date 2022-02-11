@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
+  <link rel="mask-icon" href="/images/avatar@3x.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xyhuangjia.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Objective-C与Swift的异同？共同点   OC出现过的绝大多数概念，比如引用计数、ARC（自动引用计数）、属性、协议、接口、初始化、扩展类、命名参数、匿名函数等，在Swift中继续有效（可能最多换个术语）。 Swift和Objective-C共用一套运行时环境，Swift的类型可以桥接到Objective-C（下面我简称OC），反之亦然。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift问题">
+<meta property="og:url" content="https://xyhuangjia.gitee.io/2021/01/19/Swift%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="黄佳的博客">
+<meta property="og:description" content="Objective-C与Swift的异同？共同点   OC出现过的绝大多数概念，比如引用计数、ARC（自动引用计数）、属性、协议、接口、初始化、扩展类、命名参数、匿名函数等，在Swift中继续有效（可能最多换个术语）。 Swift和Objective-C共用一套运行时环境，Swift的类型可以桥接到Objective-C（下面我简称OC），反之亦然。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-19T02:57:58.000Z">
+<meta property="article:modified_time" content="2021-05-25T08:38:43.386Z">
+<meta property="article:author" content="黄佳">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://xyhuangjia.gitee.io/2021/01/19/Swift%E9%97%AE%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Swift问题 | 黄佳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄佳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.gitee.io/2021/01/19/Swift%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar@3x.png">
+      <meta itemprop="name" content="黄佳">
+      <meta itemprop="description" content="临渊羡鱼不如退而结网。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄佳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swift问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-19 10:57:58" itemprop="dateCreated datePublished" datetime="2021-01-19T10:57:58+08:00">2021-01-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-25 16:38:43" itemprop="dateModified" datetime="2021-05-25T16:38:43+08:00">2021-05-25</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="Objective-C与Swift的异同？"><a href="#Objective-C与Swift的异同？" class="headerlink" title="Objective-C与Swift的异同？"></a>Objective-C与Swift的异同？</h4><p><strong>共同点</strong> </p>
+<ul>
+<li>OC出现过的绝大多数概念，比如引用计数、ARC（自动引用计数）、属性、协议、接口、初始化、扩展类、命名参数、匿名函数等，在Swift中继续有效（可能最多换个术语）。</li>
+<li>Swift和Objective-C共用一套运行时环境，Swift的类型可以桥接到Objective-C（下面我简称OC），反之亦然。<a id="more"></a></li>
+</ul>
+<p><strong>Swift的优点</strong></p>
+<ul>
+<li>Swift注重安全，OC注重灵活</li>
+<li>Swift注重面向协议编程、函数式编程、面向对象编程，OC注重面向对象编程</li>
+<li>Swift注重值类型，OC注重指针和引用</li>
+<li>Swift是静态类型语言，OC是动态类型语言</li>
+<li>Swift容易阅读，文件结构和大部分语法简易化，只有.swift文件，结尾不需要分号</li>
+<li>Swift中的可选类型，是用于所有数据类型，而不仅仅局限于类。相比于OC中的nil更加安全和简明</li>
+<li>Swift中的泛型类型更加方便和通用，而非OC中只能为集合类型添加泛型</li>
+<li>Swift中各种方便快捷的高阶函数（函数式编程） (Swift的标准数组支持三个高阶函数：map，filter和reduce,以及map的扩展flatMap)</li>
+<li>Swift新增了两种权限，细化权限。open &gt; public &gt; internal(默认) &gt; fileprivate &gt; private</li>
+<li>Swift中独有的元组类型(tuples)，把多个值组合成复合值。元组内的值可以是任何类型，并不要求是相同类型的。 </li>
+<li>Swift中函数可以当作参数或返回值，OC中不可以。</li>
+</ul>
+<h4 id="类-class-和-结构体-struct-有什么区别-类-class-和-结构体-struct-比较-优缺点"><a href="#类-class-和-结构体-struct-有什么区别-类-class-和-结构体-struct-比较-优缺点" class="headerlink" title="类(class) 和 结构体(struct) 有什么区别? 类(class) 和 结构体(struct) 比较,优缺点?"></a>类(class) 和 结构体(struct) 有什么区别? 类(class) 和 结构体(struct) 比较,优缺点?</h4><p>二者的本质区别：<code>struct</code>是深拷贝，拷贝的是内容；<code>class</code>是浅拷贝，拷贝的是指针。<br><code>struct</code>是值类型，<code>class</code>是引用类型。<br>（值类型的变量直接包含它们的数据，对于值类型都有它们自己的数据副本，因此对一个变量操作不可能影响另一个变量。<br>引用类型的变量存储对他们的数据引用，因此后者称为对象，因此对一个变量操作可能影响另一个变量所引用的对象。）</p>
+<p>相同点：<br>1.都可以定义以下成员：属性、方法、下标、初始化器<br>2.都支持类型扩展、协议</p>
+<p>不同点：<br>1.类支持继承和多态，结构体不支持<br>2.类必须自己定义初始化器，结构体会有默认的按成员初始化器<br>3.类支持析构器（deinit），结构体不支持<br>4.类的实例在堆上，由ARC负责释放；结构体的实例在栈上，栈结束自动释放，不参与ARC管理<br>5.变量赋值方式不同：struct是值拷贝；class是引用拷贝<br>6.immutable变量：swift的可变内容和不可变内容用var和let来甄别，如果初始为let的变量再去修改会发生编译错误。struct遵循这一特性；class不存在这样的问题<br>7.mutating function： struct 和 class 的差別是 struct 的 function 要去改变 property 的值的时候要加上 mutating，而 class 不用。<br>8.类支持引用相等比较（===于!==）,结构体不支持</p>
+<h4 id="Swift-中的枚举-关联值-和-原始值的区分"><a href="#Swift-中的枚举-关联值-和-原始值的区分" class="headerlink" title="Swift 中的枚举,关联值 和 原始值的区分"></a>Swift 中的枚举,关联值 和 原始值的区分</h4><p><strong>关联值</strong>:有时会将枚举的成员值跟其他类型的变量关联存储在一起，会非常有用</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 关联值</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Date</span> </span>&#123;</span><br><span class="line">  <span class="keyword">case</span> digit(year: <span class="type">Int</span>, month: <span class="type">Int</span>, day: <span class="type">Int</span>)</span><br><span class="line">  <span class="keyword">case</span> string(<span class="type">String</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>原始值</strong>:枚举成员可以使用相同类型的默认值预先关联，这个默认值叫做:原始值</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 原始值</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Grade</span>: <span class="title">String</span> </span>&#123;</span><br><span class="line">  <span class="keyword">case</span> perfect <span class="operator">=</span> <span class="string">&quot;A&quot;</span></span><br><span class="line">  <span class="keyword">case</span> great <span class="operator">=</span> <span class="string">&quot;B&quot;</span></span><br><span class="line">  <span class="keyword">case</span> good <span class="operator">=</span> <span class="string">&quot;C&quot;</span></span><br><span class="line">  <span class="keyword">case</span> bad <span class="operator">=</span> <span class="string">&quot;D&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Swift中-存储属性和计算属性的区别"><a href="#Swift中-存储属性和计算属性的区别" class="headerlink" title="Swift中, 存储属性和计算属性的区别?"></a>Swift中, 存储属性和计算属性的区别?</h4><p>1.存储属性(Stored Property):<br>类似于成员变量这个概念<br>存储在实例对象的内存中<br>结构体、类可以定义存储属性<br>枚举不可以定义存储属性</p>
+<p>2.计算属性(Computed Property):<br>本质就是方法(函数)<br>不占用实例对象的内存<br>枚举、结构体、类都可以定义计算属性</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Circle</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 存储属性</span></span><br><span class="line">    <span class="keyword">var</span> radius: <span class="type">Double</span></span><br><span class="line">    <span class="comment">// 计算属性</span></span><br><span class="line">    <span class="keyword">var</span> diameter: <span class="type">Double</span> &#123;</span><br><span class="line">        <span class="keyword">set</span> &#123;</span><br><span class="line">            radius <span class="operator">=</span> newValue <span class="operator">/</span> <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">get</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> radius <span class="operator">*</span> <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/15/tableview%E4%BC%98%E5%8C%96/" rel="prev" title="Tableview优化">
+      <i class="fa fa-chevron-left"></i> Tableview优化
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Objective-C%E4%B8%8ESwift%E7%9A%84%E5%BC%82%E5%90%8C%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Objective-C与Swift的异同？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB-class-%E5%92%8C-%E7%BB%93%E6%9E%84%E4%BD%93-struct-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB-%E7%B1%BB-class-%E5%92%8C-%E7%BB%93%E6%9E%84%E4%BD%93-struct-%E6%AF%94%E8%BE%83-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">类(class) 和 结构体(struct) 有什么区别? 类(class) 和 结构体(struct) 比较,优缺点?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Swift-%E4%B8%AD%E7%9A%84%E6%9E%9A%E4%B8%BE-%E5%85%B3%E8%81%94%E5%80%BC-%E5%92%8C-%E5%8E%9F%E5%A7%8B%E5%80%BC%E7%9A%84%E5%8C%BA%E5%88%86"><span class="nav-number">3.</span> <span class="nav-text">Swift 中的枚举,关联值 和 原始值的区分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Swift%E4%B8%AD-%E5%AD%98%E5%82%A8%E5%B1%9E%E6%80%A7%E5%92%8C%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.</span> <span class="nav-text">Swift中, 存储属性和计算属性的区别?</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄佳"
+      src="/images/avatar@3x.png">
+  <p class="site-author-name" itemprop="name">黄佳</p>
+  <div class="site-description" itemprop="description">临渊羡鱼不如退而结网。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xyhuangjia" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xyhuangjia" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:xyhuangjia@gmail.com" title="E-Mail → mailto:xyhuangjia@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">浙ICP备20008595号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄佳</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

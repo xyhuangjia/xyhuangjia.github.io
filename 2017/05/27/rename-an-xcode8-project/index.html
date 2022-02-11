@@ -17,35 +17,35 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"xyhuangjia.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"xyhuangjia.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;注：本文初次发布是在2017年01月18日。从那以后我意识到缺失了工程重命名过程的一个部分。重读的或者直接去阅读新增的部分。 &amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;有时你需要去重新命名对的你的xcode工程,不久以前，这个还是可能会造成困难，苹果已经有一个工程重命名的工具，但是它依然不满我的需求。我会告诉你如何超越标准功能，以获得我真正想要">
 <meta property="og:type" content="article">
 <meta property="og:title" content="译：以一种更简单或更先进的方式重命名Xcode8项目">
-<meta property="og:url" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/index.html">
+<meta property="og:url" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/index.html">
 <meta property="og:site_name" content="黄佳的博客">
 <meta property="og:description" content="&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;注：本文初次发布是在2017年01月18日。从那以后我意识到缺失了工程重命名过程的一个部分。重读的或者直接去阅读新增的部分。 &amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;有时你需要去重新命名对的你的xcode工程,不久以前，这个还是可能会造成困难，苹果已经有一个工程重命名的工具，但是它依然不满我的需求。我会告诉你如何超越标准功能，以获得我真正想要">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Duplicate-directory.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Opening-the-correct-version-of-Xcode.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Project-Navigator.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/File-inspector-1024x282.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Rename-dialog-1024x412.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Group-not-renamed.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Rename-group-folder.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Choose-group-folder.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/rename-an-xcode8-project//Info.plist_.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Scheme-not-renamed-768x29.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Manage-schemes.png">
-<meta property="og:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Rename-project-scheme.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Duplicate-directory.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Opening-the-correct-version-of-Xcode.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Project-Navigator.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/File-inspector-1024x282.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Rename-dialog-1024x412.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Group-not-renamed.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Rename-group-folder.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Choose-group-folder.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/rename-an-xcode8-project//Info.plist_.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Scheme-not-renamed-768x29.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Manage-schemes.png">
+<meta property="og:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Rename-project-scheme.png">
 <meta property="article:published_time" content="2017-05-27T14:21:46.000Z">
 <meta property="article:modified_time" content="2021-01-14T09:35:37.000Z">
 <meta property="article:author" content="黄佳">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/Duplicate-directory.png">
+<meta name="twitter:image" content="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/Duplicate-directory.png">
 
-<link rel="canonical" href="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/">
+<link rel="canonical" href="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/">
 
 
 <script id="page-configurations">
@@ -173,7 +173,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.github.io/2017/05/27/rename-an-xcode8-project/">
+    <link itemprop="mainEntityOfPage" href="https://xyhuangjia.gitee.io/2017/05/27/rename-an-xcode8-project/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar@3x.png">
@@ -277,7 +277,7 @@
 
 <p>&emsp;&emsp;&emsp;&emsp;所以现在你已经学会了如何重命名一个Xcode项目。相信我，会有一段时间，你需要这样做。在我们继续讨论充分利用UICollectionView的时候回来吧。</p>
 <p><strong><a target="_blank" rel="noopener" href="http://iosbrain.com/blog/2017/01/18/renaming-an-xcode-8-project-the-easy-way-or-the-advanced-way/">原文链接</a></strong> </p>
-<p><strong>注：</strong>如有任何疑问请发邮件到<a href="mailto:&#120;&#121;&#x68;&#117;&#97;&#x6e;&#x67;&#106;&#105;&#x61;&#x40;&#121;&#101;&#x61;&#104;&#46;&#110;&#x65;&#x74;">&#120;&#121;&#x68;&#117;&#97;&#x6e;&#x67;&#106;&#105;&#x61;&#x40;&#121;&#101;&#x61;&#104;&#46;&#110;&#x65;&#x74;</a>联系我</p>
+<p><strong>注：</strong>如有任何疑问请发邮件到<a href="mailto:&#x78;&#x79;&#104;&#x75;&#97;&#110;&#x67;&#x6a;&#105;&#x61;&#64;&#121;&#x65;&#x61;&#x68;&#46;&#110;&#101;&#x74;">&#x78;&#x79;&#104;&#x75;&#97;&#110;&#x67;&#x6a;&#105;&#x61;&#64;&#121;&#x65;&#x61;&#x68;&#46;&#110;&#101;&#x74;</a>联系我</p>
 
     </div>
 
@@ -373,7 +373,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -421,7 +421,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
