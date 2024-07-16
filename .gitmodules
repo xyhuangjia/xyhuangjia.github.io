@@ -1,0 +1,6 @@
+[submodule "theme-next"]
+	path = theme-next
+	url = https://gitee.com/xyhuangjia/theme-next.git
+[submodule "theme"]
+	path = theme
+	url = https://gitee.com/xyhuangjia/theme-next.git
