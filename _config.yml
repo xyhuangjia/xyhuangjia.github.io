@@ -105,5 +105,5 @@ theme: next
 deploy:
   type: 'git'
   repo: https://github.com/xyhuangjia/xyhuangjia.github.io.git
-  branch: master
+  branch: dev
   
