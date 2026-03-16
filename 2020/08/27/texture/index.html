@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.3.0">
+<meta name="generator" content="Hexo 8.1.1">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
@@ -210,14 +210,14 @@
 </li>
 </ul>
 </blockquote>
-<p>对于一般UIView和CALayer来说，因为他们不是线程安全的，任何相关操作都需要在主线程进行。ASDK引入了Node的概念来解决UIView/CALayer只能在主线程上操作的限制。</p>
+<p>对于一般UIView和CALayer来说，因为他们不是线程安全的，任何相关操作都需要在主线程进行。ASDK引入了Node的概念来解决UIView&#x2F;CALayer只能在主线程上操作的限制。</p>
 <blockquote>
 <h3 id="ASDisplayNode主要特点："><a href="#ASDisplayNode主要特点：" class="headerlink" title="ASDisplayNode主要特点："></a>ASDisplayNode主要特点：</h3><ol>
 <li>每个Node对应相应的UIView或者CALayer，从开发者的角度而言，只需要将初始化UIView的代码稍作修改，替换为创建ASDisplayNode即可。在不需要接受用户操作的Node上可以开启isLayerBacked，直接使用CALayer进一步降低开销。根据Scott的研究UIView的开销大约是CALayer的5倍。</li>
-<li>Node<strong>默认是异步布局/渲染</strong>，只有在需要将frame/contents等同步到UIView上才会回到主线程，使其空出更多的时间处理其他事件。</li>
+<li>Node<strong>默认是异步布局&#x2F;渲染</strong>，只有在需要将frame&#x2F;contents等同步到UIView上才会回到主线程，使其空出更多的时间处理其他事件。</li>
 <li>ASDK只有在认为需要的时候才会异步地为Node加载相应的View，因此创建Node的开销变得非常低。同时Node是<strong>线程安全</strong>的，可以在任意queue上创建和设置属性。</li>
-<li>ASDK不仅有与UIView对应的大部分控件（如ASButtonNode、ASTextNode、ASImageNode、ASTableNode等等），同时也bridge了大多数UIView的方法和属性，可以非常方便的操作frame/backgroundColor/addSubnode等，因此一般情况下只要对Node进行操作，ASDK就会在适当的时候同步到其View。如果需要的话，当相应的View加载之后（或访问node.view手动触发加载），也可以通过node.view的方式直接访问，回到我们熟悉的UIKit。</li>
-<li>当实现自定义View的时候，ASDisplayNode提供了一个初始化方法initWithViewBlock/initWithLayerBlock，就可以将任意UIView/CALayer用Node包裹起来（被包裹的view可以使用autolayout），从而与ASDK的其他组件相结合。虽然这样创建的Node与一般view在布局和渲染上的差异不大，但是由于Node管理着何时何地加载view，我们仍然能得到一定的性能提升。</li>
+<li>ASDK不仅有与UIView对应的大部分控件（如ASButtonNode、ASTextNode、ASImageNode、ASTableNode等等），同时也bridge了大多数UIView的方法和属性，可以非常方便的操作frame&#x2F;backgroundColor&#x2F;addSubnode等，因此一般情况下只要对Node进行操作，ASDK就会在适当的时候同步到其View。如果需要的话，当相应的View加载之后（或访问node.view手动触发加载），也可以通过node.view的方式直接访问，回到我们熟悉的UIKit。</li>
+<li>当实现自定义View的时候，ASDisplayNode提供了一个初始化方法initWithViewBlock&#x2F;initWithLayerBlock，就可以将任意UIView&#x2F;CALayer用Node包裹起来（被包裹的view可以使用autolayout），从而与ASDK的其他组件相结合。虽然这样创建的Node与一般view在布局和渲染上的差异不大，但是由于Node管理着何时何地加载view，我们仍然能得到一定的性能提升。</li>
 </ol>
 </blockquote>
 <h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><ol>
@@ -321,14 +321,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -369,7 +369,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

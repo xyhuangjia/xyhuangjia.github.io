@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.3.0">
+<meta name="generator" content="Hexo 8.1.1">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
@@ -207,14 +207,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="什么是离屏渲染"><a href="#什么是离屏渲染" class="headerlink" title="什么是离屏渲染"></a>什么是离屏渲染</h3><a id="more"></a>
+        <h3 id="什么是离屏渲染"><a href="#什么是离屏渲染" class="headerlink" title="什么是离屏渲染"></a>什么是离屏渲染</h3><span id="more"></span>
 <p>如果要在显示屏上显示内容，我们至少需要一块与屏幕像素数据量一样大的frame buffer，作为像素数据存储区域，而这也是GPU存储渲染结果的地方。如果有时因为面临一些限制，无法把渲染结果直接写入frame buffer，而是先暂存在另外的内存区域，之后再写入frame buffer，那么这个过程被称之为离屏渲染。</p>
 <img src="/2020/08/26/%E7%A6%BB%E5%B1%8F%E6%B8%B2%E6%9F%93/02.jpg" class="">
 
 <p>主要的渲染操作是由CoreAnimation的Render Server模块，通过调用显卡驱动提供的OpenGL或Metal接口执行，对于每一层layer，Render Server会遵循“<a href="https://link.zhihu.com/?target=https://en.wikipedia.org/wiki/Painter%27s_algorithm">画家算法</a>”（由远及近），按次序输出到frame buffer，然后按照次序绘制到屏幕，当绘制完一层，就会将该层从帧缓存区中移除（以节省空间）如下图，从左至右依次输出，得到最后的显示结果。</p>
 <img src="/2020/08/26/%E7%A6%BB%E5%B1%8F%E6%B8%B2%E6%9F%93/03.png" class="">
 
-<p>但在某些场景下“画家算法”虽然可以逐层输出，但是无法在某一层渲染完成后，在回过头来擦除/修改某一部分，因为这一层之前的layer像素数据已经被永久覆盖了。这就意味着<u>对于每一层的layer要么能够通过单次遍历就能完成渲染，要么就只能令开辟一块内存作为临时中转区来完成复杂的修改/裁剪等操作</u>。</p>
+<p>但在某些场景下“画家算法”虽然可以逐层输出，但是无法在某一层渲染完成后，在回过头来擦除&#x2F;修改某一部分，因为这一层之前的layer像素数据已经被永久覆盖了。这就意味着<u>对于每一层的layer要么能够通过单次遍历就能完成渲染，要么就只能令开辟一块内存作为临时中转区来完成复杂的修改&#x2F;裁剪等操作</u>。</p>
 <h3 id="常见场景"><a href="#常见场景" class="headerlink" title="常见场景"></a>常见场景</h3><ul>
 <li>cornerRadius+clipsToBounds，原因就如同上面提到的，不得已只能另开一块内存来操作。而如果只是设置cornerRadius（如不需要剪切内容，只需要一个带圆角的边框），或者只是需要裁掉矩形区域以外的内容（虽然也是剪切，但是稍微想一下就可以发现，对于纯矩形而言，实现这个算法似乎并不需要另开内存），并不会触发离屏渲染。</li>
 <li>shadow，其原因在于，虽然layer本身是一块矩形区域，但是阴影默认是作用在其中”非透明区域“的，而且需要显示在所有layer内容的下方，因此根据画家算法必须被渲染在先。但矛盾在于<strong>此时阴影的本体（layer和其子layer）都还没有被组合到一起，怎么可能在第一步就画出只有完成最后一步之后才能知道的形状呢</strong>？这样一来又只能另外申请一块内存，把本体内容都先画好，再根据渲染结果的形状，添加阴影到frame buffer，最后把内容画上去（这只是我的猜测，实际情况可能更复杂）。不过如果我们能够预先告诉CoreAnimation（通过shadowPath属性）阴影的几何形状，那么阴影当然可以先被独立渲染出来，不需要依赖layer本体，也就不再需要离屏渲染了。</li>
@@ -332,14 +332,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -380,7 +380,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

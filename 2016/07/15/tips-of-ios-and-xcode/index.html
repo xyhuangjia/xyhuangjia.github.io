@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.3.0">
+<meta name="generator" content="Hexo 8.1.1">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/avatar@3x.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/avatar@3x.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/avatar@2x.png">
@@ -208,15 +208,24 @@
 
       
         <p><strong>本文旨在总结iOS开发中一些小技巧，帮助更高效进行代码编写</strong></p>
-<h2 id="随机色"><a href="#随机色" class="headerlink" title="随机色"></a>随机色</h2><a id="more"></a>
+<h2 id="随机色"><a href="#随机色" class="headerlink" title="随机色"></a>随机色</h2><span id="more"></span>
 <p>1、 纯代码开发中便于展示一些控件所在空间位置来使用随机色，代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> *  测试用随机色</span><br><span class="line"> *</span><br><span class="line"> *  @return UIColor</span><br><span class="line"> *&#x2F;</span><br><span class="line">+(UIColor*)RandomColor&#123;</span><br><span class="line">        CGFloat hue &#x3D; ( arc4random() % 256 &#x2F; 256.0 ); &#x2F;&#x2F;0.0 to 1.0</span><br><span class="line">        CGFloat saturation &#x3D; ( arc4random() % 128 &#x2F; 256.0 ) + 0.5; &#x2F;&#x2F; 0.5 to 1.0,away from white</span><br><span class="line">        CGFloat brightness &#x3D; ( arc4random() % 128 &#x2F; 256.0 ) + 0.5; &#x2F;&#x2F;0.5 to 1.0,away from black</span><br><span class="line">        return  [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> *  测试用随机色</span><br><span class="line"> *</span><br><span class="line"> *  @return UIColor</span><br><span class="line"> */</span><br><span class="line">+(UIColor*)RandomColor&#123;</span><br><span class="line">        CGFloat hue = ( arc4random() % 256 / 256.0 ); //0.0 to 1.0</span><br><span class="line">        CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5; // 0.5 to 1.0,away from white</span><br><span class="line">        CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5; //0.5 to 1.0,away from black</span><br><span class="line">        return  [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="Xcode插件（已废弃）"><a href="#Xcode插件（已废弃）" class="headerlink" title="Xcode插件（已废弃）"></a>Xcode插件（已废弃）</h2><p>2、 使用开发工具插件来进行开发，使用一些优秀的插件开发能达到事半功倍的的效果。在此强烈推荐xCode插件管理工具：Alcatraz，流程如下：</p>
 <ul>
 <li>关闭xcode。</li>
-<li>安装过Alcatraz,删除之,执行如下命令,否则直接跳过进入下一环节<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~&#x2F;Library&#x2F;Application\ Support&#x2F;Developer&#x2F;Shared&#x2F;Xcode&#x2F;Plug-ins&#x2F;Alcatraz.xcplugin</span><br></pre></td></tr></table></figure></li>
-<li> 重要一环<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find ~&#x2F;Library&#x2F;Application\ Support&#x2F;Developer&#x2F;Shared&#x2F;Xcode&#x2F;Plug-ins -name Info.plist -maxdepth 3 | xargs -I&#123;&#125; defaults write &#123;&#125; DVTPlugInCompatibilityUUIDs -array-add defaults read &#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Info DVTPlugInCompatibilityUUIDsudo xcode-select --reset</span><br></pre></td></tr></table></figure></li>
-<li>安装命令<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https:&#x2F;&#x2F;raw.github.com&#x2F;supermarin&#x2F;Alcatraz&#x2F;master&#x2F;Scripts&#x2F;install.sh | sh</span><br></pre></td></tr></table></figure></li>
+<li>安装过Alcatraz,删除之,执行如下命令,否则直接跳过进入下一环节</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins/Alcatraz.xcplugin</span><br></pre></td></tr></table></figure>
+<ul>
+<li>重要一环</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins -name Info.plist -maxdepth 3 | xargs -I&#123;&#125; defaults write &#123;&#125; DVTPlugInCompatibilityUUIDs -array-add defaults read /Applications/Xcode.app/Contents/Info DVTPlugInCompatibilityUUIDsudo xcode-select --reset</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装命令</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://raw.github.com/supermarin/Alcatraz/master/Scripts/install.sh | sh</span><br></pre></td></tr></table></figure>
+<ul>
 <li>重启Xcode 并点击Load  bundles按钮（<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/0a4766c41171">点了Skip Bundles看这里</a>）</li>
 </ul>
 <h2 id="配置文件管理"><a href="#配置文件管理" class="headerlink" title="配置文件管理"></a>配置文件管理</h2><p>3、删除多余配置文件</p>
@@ -225,7 +234,7 @@
 <h2 id="自行封装网络框架"><a href="#自行封装网络框架" class="headerlink" title="自行封装网络框架"></a>自行封装网络框架</h2><p>4、集成网络框架，便于以后替换更新见如下链接：<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/d18e70f58fe6">iOS开发中关于网络框架应用的理解</a>（水文，不看也罢）</p>
 <h2 id="字符串长度处理"><a href="#字符串长度处理" class="headerlink" title="字符串长度处理"></a>字符串长度处理</h2><p>5、字符串长度处理，开发中很多时候需要对字符进行控制，一般情况我会采用string 的length判定但是length在判定时候无论针对字符还是数字判断都将长度设定为1，这样的和话在需求要求是满足一定量的字符的情况下就不是很精确了,处理方式参见<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/778f2da4b173">输入框字符控制</a></p>
 <h2 id="日志输出，显示输出位置"><a href="#日志输出，显示输出位置" class="headerlink" title="日志输出，显示输出位置"></a>日志输出，显示输出位置</h2><p>6、DBUG输出(MK框架截取的代码)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> *  DEBUG输出</span><br><span class="line"> *&#x2F;</span><br><span class="line">#ifdef DEBUG</span><br><span class="line">#   define DLog(fmt, ...) &#123;NSLog((@&quot;%s [Line %d] &quot; fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);&#125;</span><br><span class="line">#   define ELog(err) &#123;if(err) DLog(@&quot;%@&quot;, err)&#125;</span><br><span class="line">#else</span><br><span class="line">#   define DLog(...)</span><br><span class="line">#   define ELog(err)</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> *  DEBUG输出</span><br><span class="line"> */</span><br><span class="line">#ifdef DEBUG</span><br><span class="line">#   define DLog(fmt, ...) &#123;NSLog((@&quot;%s [Line %d] &quot; fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);&#125;</span><br><span class="line">#   define ELog(err) &#123;if(err) DLog(@&quot;%@&quot;, err)&#125;</span><br><span class="line">#else</span><br><span class="line">#   define DLog(...)</span><br><span class="line">#   define ELog(err)</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
 <h2 id="Xcode-卡慢，升级设备吧骚年"><a href="#Xcode-卡慢，升级设备吧骚年" class="headerlink" title="Xcode 卡慢，升级设备吧骚年"></a>Xcode 卡慢，升级设备吧骚年</h2><p>5、安装cocopods后打开xcode7.3卡慢问题：<br>把 Source Control 里面的 Automatically 全部关掉。如下图<br><img src="http://upload-images.jianshu.io/upload_images/1939330-6e7fa59586d58b90.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
 <h2 id="代码提示不见了"><a href="#代码提示不见了" class="headerlink" title="代码提示不见了"></a>代码提示不见了</h2><p>Q：iOS开发中最害怕什么？</p>
 <p>A：Xcode抽风！！！</p>
@@ -233,17 +242,20 @@
 <ol>
 <li>退出 Xcode</li>
 <li>重启电脑</li>
-<li>找到 这个 DerivedData 文件夹 删除 </li>
+<li>找到 这个 DerivedData 文件夹 删除</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">路径</span></span><br><span class="line">~/Library/Developer/Xcode/DerivedData)</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">路径</span></span><br><span class="line">~/Library/Developer/Xcode/DerivedData)</span><br></pre></td></tr></table></figure>
+
 <ol>
-<li>删除这个 com.apple.dt.Xcode 文件 </li>
+<li>删除这个 com.apple.dt.Xcode 文件</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">路径</span> </span><br><span class="line">~/Library/Caches/com.apple.dt.Xcode)</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">路径</span> </span><br><span class="line">~/Library/Caches/com.apple.dt.Xcode)</span><br></pre></td></tr></table></figure>
+
 <p>  然后运行 Xcode  就好了~~</p>
 <p> 然而小学生表示这并没有什么卵用</p>
 <h3 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h3><p>打开终端工具执行下面的代码并重启Xcode</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">defaults  write com.apple.dt.XCode IDEIndexDisable 0</span><br></pre></td></tr></table></figure>
+
 <p>然并卵</p>
 <p>其实我想说的是方法我忘记了😅<img src="/2016/07/15/tips-of-ios-and-xcode/01.jpg" class=""></p>
 
@@ -342,14 +354,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -390,7 +402,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2024</span>
+  <span itemprop="copyrightYear">2026</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
