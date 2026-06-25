@@ -1,7 +1,7 @@
 ---
 title: 译：以一种更简单或更先进的方式重命名Xcode8项目
 date: 2017-05-27 22:21:46
-tags:
+tags: Xcode, 项目配置
 categories: 译文
 ---
 
@@ -76,7 +76,7 @@ categories: 译文
 
 ![Duplicate-directory](rename-an-xcode8-project/Manage-schemes.png)
 
-在打开的对话框中，将方​​案重命名为新项目名称，然后单击“关闭”按钮（点击放大）：
+在打开的对话框中，将方案重命名为新项目名称，然后单击“关闭”按钮（点击放大）：
 
 ![Duplicate-directory](rename-an-xcode8-project/Rename-project-scheme.png)
 

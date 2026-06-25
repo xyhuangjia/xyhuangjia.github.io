@@ -1,20 +1,21 @@
 ---
 title: MailCore2发送邮件
 date: 2017-08-01 23:31:09
-tags:
+tags: MailCore2, 邮件
+categories: iOS
 ---
 
 ## 业务场景
 > 最近在做一个关于bug收集的库，其中需要收集崩溃日志信息并在后台发送邮件给开发者。有三种方式可以实现当前的需求：1、苹果的自带的发送邮件方式。2、开源库SKPSMTPMessage 3、第三方库MailCore2。需要实现发邮件需求的同学请直接阅读第三章节。
 <!-- more -->
 ## 苹果自带发送邮件
-本来想把发送邮件的代码也贴上，但是实话说这个没有什么卵用（个人觉得），界面丑到爆。而且需要手动去发送数据和个人的业务需求不符。（也可以理解为我懒😯）
+本来想把发送邮件的代码也贴上，但是实话说这个作用不大（个人觉得），界面比较简陋。而且需要手动去发送数据和个人的业务需求不符。（也可以理解为我懒😯）
 
 ## SKPSMTPMessage
 
-SKPSMTPMessage是一个开源的发送邮件第三方库，但是作者在两年前已经停止更新。收到的邮件标题会有乱码的。（按有的同学推荐去处理过但并没有什卵用····）
+SKPSMTPMessage是一个开源的发送邮件第三方库，但是作者在两年前已经停止更新。收到的邮件标题会有乱码的。（按有的同学推荐去处理过但并没有效果····）
 
-```apple 
+```objc 
     SKPSMTPMessage *testMsg = [[SKPSMTPMessage alloc] init];
     //发送者
     testMsg.fromEmail = @"xyhuangjia@yeah.net";
@@ -31,7 +32,7 @@ SKPSMTPMessage是一个开源的发送邮件第三方库，但是作者在两年
     //发送者的登录账号
     testMsg.login = @"xyhuangjia@yeah.net";
     //发送者的登录密码
-    testMsg.pass = @"HJ19930112";
+    testMsg.pass = @"***";
     //邮件主题
     testMsg.subject = [NSString stringWithCString:"来自iphone socket的测试邮件" encoding:NSUTF8StringEncoding ];
 //    testMsg.subject = @"测试数据";
@@ -66,7 +67,7 @@ SKPSMTPMessage是一个开源的发送邮件第三方库，但是作者在两年
 
 ```
 设置代理
-```apple 
+```objc 
    //MARK: SKPSMTPMessageDelegate
    - (void)messageSent:(SKPSMTPMessage *)message
    {
@@ -94,7 +95,7 @@ SKPSMTPMessage是一个开源的发送邮件第三方库，但是作者在两年
 ### 重要参数 
  #### 一、用户名密码
  登录邮箱的发送者账号和密码（独立的邮箱密码，和登录邮箱密码不同，申请方式见如何配置部分）
-```apple
+```objc
 NSString * userName = @"xyhuangjia@yeah.net";
 NSString * passWord = @"不给你看";
 smtpSession.username = userName;
@@ -102,7 +103,7 @@ smtpSession.password = passWord;
 ```
 #### 二、接受者的账号
 可以直接填写邮件接收人和抄送以及密送人员名单，基本可以实现pc端邮件发送的功能
-```apple
+```objc
     NSMutableArray *to = [[NSMutableArray alloc] init];
     NSArray * recipients = @[@"2587171762@qq.com",@"huangj@ywsoftware.com"];//,@"748781314@qq.com",@"huangj@ywsoftware.com"
     for(NSString *toAddress in recipients) {
@@ -113,7 +114,7 @@ smtpSession.password = passWord;
 ```
 ## 示例代码
 
-```apple
+```objc
     MCOSMTPSession *smtpSession = [[MCOSMTPSession alloc] init];
     smtpSession.hostname = @"smtp.yeah.net";
     smtpSession.port = 465;

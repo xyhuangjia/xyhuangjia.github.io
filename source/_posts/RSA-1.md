@@ -1,7 +1,8 @@
 ---
 title: RSA加密（一）
 date: 2016-07-13 10:08:00
-tags:
+tags: RSA, 加密算法
+categories: 加密
 ---
 
 
@@ -17,7 +18,7 @@ openssl genrsa -out rsa_private_key.pem 1024
 ```shell
 openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
 ```
-3、 由于Java服务器和我们加密解密方式不一样(我们使用PCKS#1,他们使用PCKS#8)为了配合他们我们一般需要导出一个PCKS#8格式的密钥证书(注:证书导出不可逆且公钥无法导出PCKS#8证书,IOS和JAVA服务器可以通用PCKS#1公钥证书)
+3、 由于Java服务器和我们加密解密方式不一样(我们使用PKCS#1,他们使用PKCS#8)为了配合他们我们一般需要导出一个PKCS#8格式的密钥证书(注:证书导出不可逆且公钥无法导出PKCS#8证书,IOS和JAVA服务器可以通用PKCS#1公钥证书)
 ```shell
 openssl pkcs8 -topk8 -inform PEM -in private_rsa.pem -outform PEM -nocrypt -out private_key.pem
 ```

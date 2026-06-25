@@ -2,7 +2,8 @@
 layout: ios-block
 title: Block学习笔记
 date: 2021-01-12 00:00:00
-tags:
+tags: Block, Objective-C
+categories: iOS
 ---
 
 
@@ -334,7 +335,7 @@ Block是NSObject的子类，拥有NSObject的所有属性，所以block对象也
 
 ### How
 
-吹了半天牛B，这玩意有啥用啊？听我慢慢道来！
+说了这么多，这玩意有啥用啊？听我慢慢道来！
 
 ### 参考资料
 

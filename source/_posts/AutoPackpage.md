@@ -1,7 +1,8 @@
 ---
-title: "一次脚本打包的实践"
-date: 2017/05/22 
+title: 一次脚本打包的实践
+date: 2017-05-22 00:00:00
 categories: 工具
+tags: 自动化, 打包, iOS
 ---
 
 <h3>业务场景</h3>
@@ -12,7 +13,7 @@ categories: 工具
 
 &emsp;&emsp;&emsp;&emsp;流程共分为三步：**第一步，脚本自动打包，第二步，将ipa.zip发送到x相关人员的邮箱。第三步：ipa包上传App Store**
 
-&emsp;&emsp;&emsp;&emsp;之前在做自动化测试时候也曾经涉猎过脚本打包的业务，当时是在Jenkin环境下实现该业务的([Jenkins 打包 iOS](http://www.jianshu.com/p/047ac4c39297))。当时需求很简单也是预研性质的东西，只为能实现脚本打包。所以脚本实现方式比粗犷，现在看来已经不能很完美的适应现在的要求，我需要一种更智能更优雅的实现方式。经过一段时间的资料查找,并没有找到一个很好的解决方案。后来朋友推荐[jkpang-庞](https://github.com/jkpang)写的一个打包脚本[PPAutoPackageScript](https://github.com/jkpang/PPAutoPackageScript)提供了很好的解决方案模型，于是就恬不知耻的按自己的需求悄悄改代码了。
+&emsp;&emsp;&emsp;&emsp;之前在做自动化测试时候也曾经涉猎过脚本打包的业务，当时是在Jenkin环境下实现该业务的([Jenkins 打包 iOS](http://www.jianshu.com/p/047ac4c39297))。当时需求很简单也是预研性质的东西，只为能实现脚本打包。所以脚本实现方式比较粗犷，现在看来已经不能很完美的适应现在的要求，我需要一种更智能更优雅的实现方式。经过一段时间的资料查找,并没有找到一个很好的解决方案。后来朋友推荐[jkpang-庞](https://github.com/jkpang)写的一个打包脚本[PPAutoPackageScript](https://github.com/jkpang/PPAutoPackageScript)提供了很好的解决方案模型，于是就恬不知耻的按自己的需求悄悄改代码了。
 
 
 <h3>脚本打包</h3>
@@ -30,7 +31,7 @@ categories: 工具
  
  - 发邮件时修改上传大文件限制
  ```
- # 修改大文件限制 echo $macPassowrd | sudo -S postconf -e message_size_limit=0
+ # 修改大文件限制 echo $macPassword | sudo -S postconf -e message_size_limit=0
 postconf -d | grep size
 ```
 
@@ -54,7 +55,7 @@ if [[ "$result" != "" ]]
      echo "上传到App Store成功"
      # 上传成功，通知开发人员
  else
-     echo "上传到App Store成功失败"
+     echo "上传到App Store失败"
      # 保留xml以备查询
  fi
 
@@ -209,7 +210,7 @@ result=$(echo $FILE | grep "${PATTERN}")
      echo "上传到App Store成功"
      # 上传成功，通知开发人员
  else
-     echo "上传到App Store成功失败"
+     echo "上传到App Store失败"
      # 保留xml以备查询
  fi
 
@@ -392,7 +393,7 @@ zip -r $zipName $export_ipa_path/$ipa_name.ipa
 export LANG=C.UTF-8
 #$echo <123> | sudo -S <command>
 # 修改大文件限制
-echo $macPassowrd | sudo -S postconf -e message_size_limit=0
+echo $macPassword | sudo -S postconf -e message_size_limit=0
 postconf -d | grep size
 # echo message_size_limit
 # 压缩包路径

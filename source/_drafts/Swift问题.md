@@ -1,11 +1,15 @@
 ---
 title: Swift问题
-tags:
+tags: Swift
+categories: iOS
 ---
-#### Objective-C与Swift的异同？
-**共同点** 
- - OC出现过的绝大多数概念，比如引用计数、ARC（自动引用计数）、属性、协议、接口、初始化、扩展类、命名参数、匿名函数等，在Swift中继续有效（可能最多换个术语）。
- - Swift和Objective-C共用一套运行时环境，Swift的类型可以桥接到Objective-C（下面我简称OC），反之亦然。<!-- more -->
+## Objective-C与Swift的异同？
+
+<!-- more -->
+
+**共同点**
+- OC出现过的绝大多数概念，比如引用计数、ARC（自动引用计数）、属性、协议、接口、初始化、扩展类、命名参数、匿名函数等，在Swift中继续有效（可能最多换个术语）。
+- Swift和Objective-C共用一套运行时环境，Swift的类型可以桥接到Objective-C（下面我简称OC），反之亦然。
 
 **Swift的优点**
  - Swift注重安全，OC注重灵活
@@ -20,7 +24,7 @@ tags:
  - Swift中独有的元组类型(tuples)，把多个值组合成复合值。元组内的值可以是任何类型，并不要求是相同类型的。 
 - Swift中函数可以当作参数或返回值，OC中不可以。
 
-#### 类(class) 和 结构体(struct) 有什么区别? 类(class) 和 结构体(struct) 比较,优缺点?
+## 类(class) 和 结构体(struct) 有什么区别?
 二者的本质区别：`struct`是深拷贝，拷贝的是内容；`class`是浅拷贝，拷贝的是指针。
 `struct`是值类型，`class`是引用类型。
 （值类型的变量直接包含它们的数据，对于值类型都有它们自己的数据副本，因此对一个变量操作不可能影响另一个变量。
@@ -40,7 +44,7 @@ tags:
 7.mutating function： struct 和 class 的差別是 struct 的 function 要去改变 property 的值的时候要加上 mutating，而 class 不用。
 8.类支持引用相等比较（===于!==）,结构体不支持
 
-#### Swift 中的枚举,关联值 和 原始值的区分
+## Swift 中的枚举：关联值和原始值的区分
 **关联值**:有时会将枚举的成员值跟其他类型的变量关联存储在一起，会非常有用
 ```swift
 // 关联值
@@ -59,7 +63,7 @@ enum Grade: String {
   case bad = "D"
 }
 ```
-#### Swift中, 存储属性和计算属性的区别?
+## Swift中存储属性和计算属性的区别?
 1.存储属性(Stored Property):
 类似于成员变量这个概念
 存储在实例对象的内存中

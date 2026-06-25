@@ -1,9 +1,10 @@
 ---
 title: Texture的读书笔记
-tags:
+tags: Texture, UI, 性能优化
+categories: iOS
 ---
 
-`Texture`原名`AsyncDisplayKit`，是FaceBook为解决页面卡顿提供方案。他自己重新实现一整套异步布局和渲染机制来达到预期结果。
+`Texture`原名`AsyncDisplayKit`，是Facebook为解决页面卡顿提供的方案。它重新实现了一整套异步布局和渲染机制来达到预期结果。
 
 该框架从一下三个方面来优化
 
@@ -27,6 +28,6 @@ tags:
 
 ### 注意事项
 
-1. ASDK不支持Storyboard和Autolayout，但是可以与使用Autolayout的view兼容共存。同样React native和Component Kit等其他Facebook出品的iOS库也不支持Storyboard。
+1. ASDK不支持Storyboard和Autolayout，但是可以与使用Autolayout的view兼容共存。同样React Native和ComponentKit等其他Facebook出品的iOS库也不支持Storyboard。
 2. 由于Node的异步渲染，很有可能在其View到达屏幕之后，内容仍然在渲染过程中。此时需要额外考虑每个Node的placeholder状态，使用户不至于看到一片空白。
 3. 在使用ASDisplayNode初始化initWithViewBlock时，由于Node需要在适当的时候调用该block来创建view，因此并不会立即调用block（block可能capture其他变量，例如self），而是存在一个ivar当中。如果该view始终没被创建，而此时拥有该node的父元素被销毁，容易造成retain cycle导致memory leak。

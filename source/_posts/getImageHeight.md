@@ -1,7 +1,8 @@
 ---
 title: 获取图片的宽高
 date: 2016-07-22 00:00:00
-tags:
+tags: 图片, WebView
+categories: iOS
 ---
 
 闲话不多说，上码。
@@ -16,7 +17,7 @@ tags:
     UIImageView *imgView = [[UIImageView alloc]initWithImage:img];
     imgView.frame = CGRectMake(0, 0, img.size.width, img.size.height);
     [self.view addSubview:imgView];
-    NSLog(@"===%f===%f",img.size.width,img.size.width);
+    NSLog(@"===%f===%f",img.size.width,img.size.height);
 ```
 2、加载互联网图片
 - SDWebImage下载图片,图片被缓存到本地获取本地图片的宽高。
@@ -32,7 +33,7 @@ tags:
         sdImgView.frame = CGRectMake(0, CGRectGetMaxY(imgView.frame)+20, image.size.width, image.size.height);
     }];
 ```
-- 网络框架加载:先通过文件头获取图片大小(没什么卵用)，如果获取失败，则下载完整的图片data，然后计算大小
+- 网络框架加载:先通过文件头获取图片大小（精度有限），如果获取失败，则下载完整的图片data，然后计算大小
 ```
 -(CGSize)getImageSizeWithURL:(id)imageURL
 {

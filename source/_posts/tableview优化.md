@@ -1,7 +1,8 @@
 ---
 title: Tableview优化
 date: 2021-01-15 00:00:00
-tags:
+tags: UITableView, 性能优化
+categories: iOS
 ---
 
 ### 造成`tableView`卡顿的原因
@@ -17,7 +18,7 @@ tags:
 8.使用addView 给cell动态添加view
 9.没有按需加载cell（cell滚动很快时，只加载范围内的cell）
 10.实现无用的代理方法(tableView只遵守两个协议)
-11.没有做缓存行高（estimatedHeightForRow不能和HeightForRow里面的layoutIfNeed同时存在，这两者同时存在才会出现“窜动”的bug。
+11.没有做缓存行高（`estimatedHeightForRow`不能和`heightForRowAtIndexPath`里面的`layoutIfNeeded`同时存在，这两者同时存在才会出现”窜动”的bug。
 建议是：只要是固定行高就写预估行高来减少行高调用次数提升性能。如果是动态行高就不要写预估方法了，用一个行高的缓存字典来减少代码的调用次数即可）
 12.做了多余的绘制工作（在实现drawRect:的时候，它的rect参数就是需要绘制的区域，这个区域之外的不需要进行绘制）
 13.没有预渲染图像。（当新的图像出现时，仍然会有短暂的停顿现象。解决的办法就是在bitmap context里先将其画一遍，导出成UIImage对象，然后再绘制到屏幕）

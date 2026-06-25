@@ -1,7 +1,8 @@
 ---
 title: 面向面试之-卡顿优化
 date: 2020-08-26 07:03:24
-tags:
+tags: 性能优化, 卡顿, UITableView
+categories: iOS
 ---
 
 ### 卡顿出现原因？
@@ -67,21 +68,20 @@ TableView在加载数据时会先通过`estimatedHeightForRowAtIndexPath`处理�
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {  
     return 30.0;  
 } 
-复制代码
 ```
 
 预先计算并缓存行高
 
 iOS8.0之后获取cell对象之后会再次调用`heightForRowAtIndexPath: `方法获取行高，这也就意味着我们其实可以先创建cell对象，之后再提供行高。具体方法我们可以在cell类中添加`layoutAttribute`属性，记录相应的`UIEdgeInsets`，然后在设置cell真实高度的时候返回。iOS7.0之前则是必须在cell对象创建之前先获得所有Cell的高度。
 
-**优化三、减少Subviews层级、异步绘制、避免离屛渲染、使用hidden隐藏图层**
+**优化三、减少Subviews层级、异步绘制、避免离屏渲染、使用hidden隐藏图层**
 
 1. 减少图层层级数
-2. 异步绘制。通过重写本身是异步的drawReact:方法，调用Core Graphics 框架中的API 进行异步绘制，提高效率。另外drawRect:中大量的绘制操作也会造成内存的增长，可以使用[CAShapeLayer]()来代替。
+2. 异步绘制。通过重写本身是异步的`drawRect:`方法，调用Core Graphics 框架中的API 进行异步绘制，提高效率。另外`drawRect:`中大量的绘制操作也会造成内存的增长，可以使用CAShapeLayer来代替。
 3. 减少多余的绘制操作。在实现drawRect:方法的时候，他的参数rect就是我们需要绘制的区域，在rect范围之外的区域不要绘制，否则会消耗相当大的资源。
-4. 图片异步加载并及时释放缓存。在Cell类中添加图片应该避免使用imageWithName:方法，因为该方法会将图片缓存到内存中。而是应该使用imageWithContensOfFile:方法来替换，该方法在图片使用完后系统会自动释放资源，并不会缓存下来。另外结合[SDWebImage]()框架的使用可以显著的提高图片加载的性能。
+4. 图片异步加载并及时释放缓存。在Cell类中添加图片应该避免使用imageWithName:方法，因为该方法会将图片缓存到内存中。而是应该使用imageWithContensOfFile:方法来替换，该方法在图片使用完后系统会自动释放资源，并不会缓存下来。另外结合SDWebImage框架的使用可以显著的提高图片加载的性能。
 5. 避免动态添加图层。在初始化cell的时候一并将所有图层预先创建好，通过hidden属性控制子图层的显示或隐藏，因为单纯的显示操作要比创建快的多。
-6. 避免[离屛渲染]()。开启离屛渲染的代价就是需要新开辟一块新的缓冲区，在渲染的过程中还会多次的切换上下文，这些都是很消耗性能的。以下情况均会造成离屛渲染。
+6. 避免离屏渲染。开启离屏渲染的代价就是需要新开辟一块新的缓冲区，在渲染的过程中还会多次的切换上下文，这些都是很消耗性能的。以下情况均会造成离屏渲染。
 
 > - 为图层设置遮罩（layer.mask）
 > - 设置图层的 layer.masksToBounds/view.clipsToBounds属性为True
@@ -146,7 +146,6 @@ iOS8.0之后获取cell对象之后会再次调用`heightForRowAtIndexPath: `方�
 
 ```
 scrollViewWillEndDragging: withVelocity: targetContentoffset:
-复制代码
 ```
 
 来按需加载内容。
@@ -173,7 +172,6 @@ scrollViewWillEndDragging: withVelocity: targetContentoffset:
         [_dataList addObjectsFromArray:arr];  
     }  
 }  
-复制代码
 ```
 
 targetContentOffset 是TableView减速到停止的地方, velocity 表示速度向量。

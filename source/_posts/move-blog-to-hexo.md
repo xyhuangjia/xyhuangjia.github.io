@@ -1,9 +1,8 @@
-
 ---
 title: 博客迁移至Hexo
 categories: 杂谈
 date: 2017-06-26 22:25:58
-tags:
+tags: Hexo, 博客, 迁移
 ---
 
 ## 起因
@@ -39,7 +38,7 @@ hexo下主题[站点](https://github.com/hexojs/hexo/wiki/Sites)很多。我个�
 
  ![1](move-blog-to-hexo/新建文章.png)
 
- - 新建私密文章：有时候写完一篇文章，暂时我们觉得文章有些细节不够完美，还需要慢慢的打磨一下。我希望在本地能够预览但是不需要部署到站点上，你可以通过执行`hexo new draft "filename"`来新建一片私密文章，得到类似如下的截图。
+ - 新建私密文章：有时候写完一篇文章，暂时我们觉得文章有些细节不够完美，还需要慢慢的打磨一下。我希望在本地能够预览但是不需要部署到站点上，你可以通过执行`hexo new draft "filename"`来新建一篇私密文章，得到类似如下的截图。
 
  ![新建私密文章](move-blog-to-hexo/新建私密文章.png)
 

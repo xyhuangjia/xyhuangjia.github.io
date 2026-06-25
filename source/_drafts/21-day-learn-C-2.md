@@ -1,6 +1,7 @@
 ---
 title: 读书笔记之21天学会C++(二)
-tags:
+tags: C++, 读书笔记
+categories: 读书笔记
 ---
 
 ## 第三部分：标准库(STL)

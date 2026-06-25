@@ -1,7 +1,8 @@
 ---
 title: iOS开发Tips(持续更新）·····
 date: 2016-07-15 16:21:06
-tags:
+tags: 技巧, Xcode, 开发效率
+categories: iOS
 ---
 
 **本文旨在总结iOS开发中一些小技巧，帮助更高效进行代码编写**
@@ -50,7 +51,7 @@ curl -fsSL https://raw.github.com/supermarin/Alcatraz/master/Scripts/install.sh 
 ```shell
 ~/Library/MobileDevice/Provisioning Profiles 
 ```
-现在推荐使用天狐大佬的工具[ProfilesManager](**https://github.com/shaojiankui/ProfilesManager**)
+现在推荐使用天狐大佬的工具[ProfilesManager](https://github.com/shaojiankui/ProfilesManager)
 
 ## 自行封装网络框架
 
@@ -78,7 +79,7 @@ curl -fsSL https://raw.github.com/supermarin/Alcatraz/master/Scripts/install.sh 
 ```
 ## Xcode 卡慢，升级设备吧骚年
 
-5、安装cocopods后打开xcode7.3卡慢问题：
+7、安装cocopods后打开xcode7.3卡慢问题：
 把 Source Control 里面的 Automatically 全部关掉。如下图
 ![Paste_Image.png](http://upload-images.jianshu.io/upload_images/1939330-6e7fa59586d58b90.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
@@ -112,7 +113,7 @@ A：Xcode抽风！！！
 
   然后运行 Xcode  就好了~~
 
- 然而小学生表示这并没有什么卵用
+ 然而小学生表示这并没有解决问题
 
 ### 方案二
 
@@ -122,6 +123,6 @@ A：Xcode抽风！！！
 defaults  write com.apple.dt.XCode IDEIndexDisable 0
 ```
 
-然并卵
+然而并没有用
 
 其实我想说的是方法我忘记了😅![](tips-of-ios-and-xcode/01.jpg)

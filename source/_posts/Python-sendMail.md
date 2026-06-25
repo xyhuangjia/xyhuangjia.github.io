@@ -1,7 +1,8 @@
 ---
-title: "Pyhon发送邮件实践(自动化打包续)"
+title: Pyhon发送邮件实践(自动化打包续)
 date: 2017-09-01 11:19:53
-tags:
+tags: Python, 邮件, 自动化
+categories: Python
 ---
 
 ## 起因
@@ -28,7 +29,7 @@ def data(self,msg):
         """
         self.putcmd("data")
         (code,repl)=self.getreply()
-        if self.debugle vel >0 : print "data:", (code,repl)
+        if self.debuglevel > 0 : print "data:", (code,repl)
         if code != 354:
             raise SMTPDataError(code,repl)
         else:
@@ -127,8 +128,8 @@ def sendMail(filePath,fileName,appName):
 
     #参数配置
     from_addr = "xyhuangjia@yeah.net"
-    password = "HJ19930112"
-    to_addr = ["dengq@ywsoftware.com","huangj@ywsoftware.com"]
+    password = "***"
+    to_addr = ["example@example.com","example2@example.com"]
     smtp_server = "smtp.yeah.net"
 
     #邮件信息配置

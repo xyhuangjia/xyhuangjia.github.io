@@ -1,7 +1,8 @@
 ---
 title: Hexo相关零碎
 date: 2018-08-04 15:48:19
-tags:
+tags: Hexo, 博客
+categories: 工具
 ---
 
 **题外话**
@@ -18,14 +19,14 @@ tags:
 
 ### 安装与更新
 
-```javascript
+```shell
 npm install hexo -g #安装  
 npm update hexo -g #更新
 ```
 
 ### 新建文章
 
- &emsp;&emsp; 当你胸中有大竹棍时候。你可以使用如下两条命令来操作新建一份可以直接在pc或者移动端预览的文稿。
+ &emsp;&emsp; 当你胸有成竹时候。你可以使用如下两条命令来操作新建一份可以直接在pc或者移动端预览的文稿。
 
 ```shell
 hexo new "title" #新建文章
@@ -45,11 +46,16 @@ hexo new draft "new draft"
 ```shell
 hexo server --drafts # 预览草稿
 hexo s
-hexo publish #发布
-hexo p  
 hexo generate#生成
 hexo g 
 
+```
+
+### 发布
+
+```shell
+hexo publish "title" #发布草稿
+hexo p
 ```
 
 ### 部署
@@ -61,7 +67,6 @@ hexo generate --deploy
 hexo deploy --generate
 或
 hexo deploy -g
-hexo server -g
 ```
 
 ## 主题设置
@@ -147,12 +152,9 @@ deploy:
 
 ```
 
-##  常见问题
+## 常见问题
 
-
-
-
-
+待补充...
 
 
 
