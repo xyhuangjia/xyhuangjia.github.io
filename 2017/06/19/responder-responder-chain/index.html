@@ -31,8 +31,9 @@
 <meta property="og:image" content="https://xyhuangjia.gitee.io/2017/06/19/responder-responder-chain/iOS_and_OSX_responder_chain_2x.png">
 <meta property="og:image" content="https://xyhuangjia.gitee.io/2017/06/19/responder-responder-chain/responder_chain_overview_2x.png">
 <meta property="article:published_time" content="2017-06-19T05:29:04.000Z">
-<meta property="article:modified_time" content="2021-01-14T09:34:55.000Z">
+<meta property="article:modified_time" content="2026-06-25T15:28:59.863Z">
 <meta property="article:author" content="黄佳">
+<meta property="article:tag" content="响应者链, iOS, UIKit">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://xyhuangjia.gitee.io/2017/06/19/responder-responder-chain/responder.jpg">
 
@@ -194,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 17:34:55" itemprop="dateModified" datetime="2021-01-14T17:34:55+08:00">2021-01-14</time>
+                <time title="修改时间：2026-06-25 23:28:59" itemprop="dateModified" datetime="2026-06-25T23:28:59+08:00">2026-06-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -315,9 +316,8 @@
 <li><a target="_blank" rel="noopener" href="http://sindrilin.com/2015/12/27/%E4%BA%8B%E4%BB%B6%E4%BC%A0%E9%80%92%E5%93%8D%E5%BA%94%E9%93%BE/">事件传递响应链</a></li>
 <li><a target="_blank" rel="noopener" href="http://www.hmttommy.com/2015/05/25/iOS-hitTest/">iOS hitTest-点击事件分发分析</a></li>
 </ul>
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>千辛万苦找到崩溃的原因了。是因为使用了firstResponder这个命名一个方法，在该方法里取消输入框第一响应，过早释放对象引起的空指针一场引起的异常闪退。iOS10之前貌似是没有的。去寻找原因，没找到。得出老生常谈的结论：命名要规范。</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>千辛万苦找到崩溃的原因了。是因为使用了firstResponder这个命名一个方法，在该方法里取消输入框第一响应，过早释放对象引起的空指针异常引起的闪退。iOS10之前貌似是没有的。去寻找原因，没找到。得出老生常谈的结论：命名要规范。</p>
 <p>响应者链和事件的分发是两个不同的概念。前者传递路径是一个自上而下，后者是一个自下而上。不能混淆为一谈。</p>
-<p>PS:下周更新事件分发机制</p>
 
     </div>
 
@@ -326,6 +326,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%93%8D%E5%BA%94%E8%80%85%E9%93%BE-iOS-UIKit/" rel="tag"># 响应者链, iOS, UIKit</a>
+          </div>
 
         
 
@@ -421,11 +424,11 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
